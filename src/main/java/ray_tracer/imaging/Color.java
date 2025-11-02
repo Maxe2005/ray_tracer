@@ -1,4 +1,6 @@
-package ray_tracer;
+package ray_tracer.imaging;
+
+import ray_tracer.geometry.AbstractVec3;
 
 public class Color extends AbstractVec3 {
     private final double r;

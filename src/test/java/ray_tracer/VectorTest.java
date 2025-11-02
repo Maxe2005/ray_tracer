@@ -1,6 +1,10 @@
 package ray_tracer;
 
 import org.junit.jupiter.api.Test;
+
+import ray_tracer.geometry.DoubleComparisonUtil;
+import ray_tracer.geometry.Vector;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VectorTest {

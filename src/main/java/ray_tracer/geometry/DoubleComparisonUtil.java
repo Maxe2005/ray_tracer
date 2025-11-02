@@ -1,4 +1,4 @@
-package ray_tracer;
+package ray_tracer.geometry;
 
 public class DoubleComparisonUtil {
     private static final double EPSILON = 1e-9;

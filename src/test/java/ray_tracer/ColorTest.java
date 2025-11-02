@@ -1,6 +1,10 @@
 package ray_tracer;
 
 import org.junit.jupiter.api.Test;
+
+import ray_tracer.geometry.DoubleComparisonUtil;
+import ray_tracer.imaging.Color;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ColorTest {

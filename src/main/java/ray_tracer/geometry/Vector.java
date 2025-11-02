@@ -1,4 +1,4 @@
-package ray_tracer;
+package ray_tracer.geometry;
 
 /** 3D vector class */
 public class Vector extends AbstractVec3 {

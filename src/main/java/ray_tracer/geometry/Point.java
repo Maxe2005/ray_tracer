@@ -1,4 +1,4 @@
-package ray_tracer;
+package ray_tracer.geometry;
 
 /** 3D point class */
 public class Point extends AbstractVec3 {
