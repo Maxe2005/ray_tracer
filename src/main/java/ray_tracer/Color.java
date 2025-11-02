@@ -6,7 +6,9 @@ public class Color extends AbstractVec3 {
     private final double b;
 
     public Color(double r, double g, double b) {
-        super(r, g, b);
+        super(r > 1.0 ? 1.0 : (r < 0.0 ? 0.0 : r),
+                g > 1.0 ? 1.0 : (g < 0.0 ? 0.0 : g),
+                b > 1.0 ? 1.0 : (b < 0.0 ? 0.0 : b));
         this.r = this.getX();
         this.g = this.getY();
         this.b = this.getZ();
@@ -19,18 +21,18 @@ public class Color extends AbstractVec3 {
     @Override
     public AbstractVec3 addition(AbstractVec3 other) {
         Color o = (Color) other;
-        return new Color(this.getX() + o.getX(), this.getY() + o.getY(), this.getZ() + o.getZ());
+        return new Color(this.getR() + o.getR(), this.getG() + o.getG(), this.getB() + o.getB());
     }
 
     @Override
     public AbstractVec3 scalarMultiplication(double scalar) {
-        return new Color(this.getX() * scalar, this.getY() * scalar, this.getZ() * scalar);
+        return new Color(this.getR() * scalar, this.getG() * scalar, this.getB() * scalar);
     }
 
     @Override
     public AbstractVec3 schurProduct(AbstractVec3 other) {
         Color o = (Color) other;
-        return new Color(this.getX() * o.getX(), this.getY() * o.getY(), this.getZ() * o.getZ());
+        return new Color(this.getR() * o.getR(), this.getG() * o.getG(), this.getB() * o.getB());
     }
 
     public int toRGB() {
