@@ -17,6 +17,9 @@ public class SceneFileParser {
 
             Scene scene = new Scene();
 
+            boolean isSizeSet = false;
+            boolean isCameraSet = false;
+
             String line;
             int num_line = 0;
             while ((line = reader.readLine()) != null) {
@@ -36,27 +39,30 @@ public class SceneFileParser {
                 String[] rest = tokens.length > 1 ? tokens[1].trim().split("\\s+") : new String[0];
 
                 switch (key) {
+                    case "size":
+                        parseSize(rest, scene, num_line);
+                        isSizeSet = true;
+                        break;
+                    case "output":
+                        parseOutput(rest, scene, num_line);
+                        break;
                     case "camera":
                         parseCamera(rest, scene, num_line);
+                        isCameraSet = true;
                         break;
                     case "sphere":
                         parseSphere(rest, scene, num_line);
                         break;
-                    case "light":
-                        parseLight(rest, scene, num_line);
-                        break;
-                    case "material":
-                        parseMaterial(rest, scene, num_line);
-                        break;
-                    case "background":
-                        parseBackground(rest, scene, num_line);
-                        break;
-                    case "size":
-                        parseSize(rest, scene, num_line);
-                        break;
                     default:
                         System.err.println("[SceneFileParser] Ligne inconnue '" + key + "' -> '" + rest + "'");
                 }
+            }
+
+            if (!isSizeSet) {
+                System.err.println("[SceneFileParser] Aucune taille spécifiée dans le fichier de scène.");
+            }
+            if (!isCameraSet) {
+                System.err.println("[SceneFileParser] Aucune caméra spécifiée dans le fichier de scène.");
             }
 
             return scene;
@@ -67,32 +73,6 @@ public class SceneFileParser {
     }
 
     // Méthodes dédiées pour chaque cas.
-
-    private static void parseCamera(String[] params, Scene scene, int lineNumber) {
-        // Ex: camera 0 0 0 0 0 -1 90
-
-        scene.addDirective("camera", params);
-    }
-
-    private static void parseSphere(String params, Scene scene, int lineNumber) {
-        // Ex: sphere x y z radius materialName
-        scene.addDirective("sphere", params);
-    }
-
-    private static void parseLight(String params, Scene scene, int lineNumber) {
-        // Ex: light x y z r g b intensity
-        scene.addDirective("light", params);
-    }
-
-    private static void parseMaterial(String params, Scene scene, int lineNumber) {
-        // Ex: material name r g b diffuse specular shininess
-        scene.addDirective("material", params);
-    }
-
-    private static void parseBackground(String params, Scene scene, int lineNumber) {
-        // Ex: background r g b
-        scene.addDirective("background", params);
-    }
 
     private static void parseSize(String[] params, Scene scene, int lineNumber) {
         // Ex: size width height
@@ -108,6 +88,42 @@ public class SceneFileParser {
         } else {
             System.err.println("[SceneFileParser] Taille invalide: " + String.join(" ", params));
             System.err.println("  Ligne " + lineNumber + ": Il faut exactement deux entiers (width height).");
+        }
+    }
+
+    private static void parseOutput(String[] params, Scene scene, int lineNumber) {
+        // Ex: output filename
+        if (params.length == 1) {
+            String filename = params[0];
+            scene.setOutputFile(filename);
+        } else {
+            System.err.println("[SceneFileParser] Sortie invalide: " + String.join(" ", params));
+            System.err.println("  Ligne " + lineNumber + ": Il faut exactement un nom de fichier.");
+        }
+    }
+
+    private static void parseCamera(String[] params, Scene scene, int lineNumber) {
+        // Ex: camera lookFromX lookFromY lookFromZ lookAtX lookAtY lookAtZ upDirX upDirY upDirZ fov
+        if (params.length == 10) {
+            try {
+                double lookFromX = Double.parseDouble(params[1]);
+                double lookFromY = Double.parseDouble(params[2]);
+                double lookFromZ = Double.parseDouble(params[3]);
+                double lookAtX = Double.parseDouble(params[4]);
+                double lookAtY = Double.parseDouble(params[5]);
+                double lookAtZ = Double.parseDouble(params[6]);
+                double upDirX = Double.parseDouble(params[7]);
+                double upDirY = Double.parseDouble(params[8]);
+                double upDirZ = Double.parseDouble(params[9]);
+                double fov = Double.parseDouble(params[10]);
+                scene.setCamera(new Camera(lookFromX, lookFromY, lookFromZ, lookAtX, lookAtY, lookAtZ, upDirX, upDirY, upDirZ, fov));
+            } catch (NumberFormatException e) {
+                System.err.println("[SceneFileParser] Paramètres de caméra invalides: " + String.join(" ", params));
+                System.err.println("  Ligne " + lineNumber + ": " + e.getMessage());
+            }
+        } else {
+            System.err.println("[SceneFileParser] Paramètres de caméra invalides: " + String.join(" ", params));
+            System.err.println("  Ligne " + lineNumber + ": Il faut exactement 10 paramètres.");
         }
     }
 

@@ -23,11 +23,27 @@ public class Scene {
         this.height = height;
     }
 
+    public void setOutputFile(String output) {
+        this.output = output;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
 
     public int getWidth() {
         return width;
     }
     public int getHeight() {
         return height;
+    }
+
+    public String getOutputFile() {
+        return output;
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 }
