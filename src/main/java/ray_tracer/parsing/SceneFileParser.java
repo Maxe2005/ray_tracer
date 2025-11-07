@@ -244,8 +244,11 @@ public class SceneFileParser {
                 double y = Double.parseDouble(params[1]);
                 double z = Double.parseDouble(params[2]);
                 double radius = Double.parseDouble(params[3]);
-                if (waitingDiffuse == null || waitingSpecular == null) {
-                    addWarning("Matériau non défini avant la sphère", lineNumber, " Vous n'avez pas défini de couleurs diffuse et spéculaire avant de définir la sphère. Utilisation des couleurs par défaut (noir).");
+                if (waitingDiffuse == null) {
+                    addWarning("Matériau non défini avant la sphère", lineNumber, " Vous n'avez pas défini de couleurs diffuse pour la sphère. Utilisation de la couleur par défaut (noir).");
+                }
+                if (waitingSpecular == null) {
+                    addWarning("Matériau non défini avant la sphère", lineNumber, " Vous n'avez pas défini de couleurs spéculaire pour la sphère. Utilisation de la couleur par défaut (noir).");
                 }
                 scene.addShape(new Sphere(x, y, z, radius, waitingDiffuse, waitingSpecular));
             } catch (NumberFormatException e) {
