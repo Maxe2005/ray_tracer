@@ -13,4 +13,8 @@ public abstract class AbstractLight {
         return color;
     }
 
+    public String toString() {
+        return "AbstractLight(color: " + color + ")";
+    }
+
 }

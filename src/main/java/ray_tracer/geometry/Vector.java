@@ -54,5 +54,9 @@ public class Vector extends AbstractVec3 {
         return new Vector(this.getX() / norm, this.getY() / norm, this.getZ() / norm);
     }
 
+    public String toString() {
+        return "Vector(" + getX() + ", " + getY() + ", " + getZ() + ")";
+    }
+
 
 }

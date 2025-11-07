@@ -15,4 +15,8 @@ public class DirectionalLight extends AbstractLight {
         return direction;
     }
 
+    public String toString() {
+        return "DirectionalLight(direction: " + direction + ", color: " + getColor() + ")";
+    }
+
 }

@@ -7,10 +7,22 @@ public abstract class Shape {
     protected final Color specular;
 
     public Shape(Color diffuse, Color specular) {
-        this.diffuse = diffuse;
-        this.specular = specular;
+        if (diffuse == null) {
+            this.diffuse = Color.BLACK;
+        } else {
+            this.diffuse = diffuse;
+        }
+        if (specular == null) {
+            this.specular = Color.BLACK;
+        } else {
+            this.specular = specular;
+        }
     }
 
     public abstract Color getDiffuse();
     public abstract Color getSpecular();
+
+    public String toString() {
+        return "Shape(diffuse: " + diffuse + ", specular: " + specular + ")";
+    }
 }

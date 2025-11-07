@@ -6,6 +6,8 @@ public class Color extends AbstractVec3 {
     private final double r;
     private final double g;
     private final double b;
+    public static final Color BLACK = new Color(0.0, 0.0, 0.0);
+    public static final Color WHITE = new Color(1.0, 1.0, 1.0);
 
     public Color(double r, double g, double b) {
         super(r > 1.0 ? 1.0 : (r < 0.0 ? 0.0 : r),
@@ -56,6 +58,10 @@ public class Color extends AbstractVec3 {
 
     public double getB() {
         return this.getZ();
+    }
+
+    public String toString() {
+        return "Color(r:" + r + ", g:" + g + ", b:" + b + ")";
     }
 
 }

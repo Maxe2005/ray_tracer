@@ -15,4 +15,8 @@ public class PointLight extends AbstractLight {
         return position;
     }
 
+    public String toString() {
+        return "PointLight(position: " + position + ", color: " + getColor() + ")";
+    }
+
 }

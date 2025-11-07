@@ -89,7 +89,19 @@ public class Scene {
 
 
     public String toString() {
-        return "Scene [width=" + width + ", height=" + height + "]\n\tcamera=" + camera + "\n\toutput=" + output
-                + "\n\tambient=" + ambient + "\n\tlights=" + lights + "\n\tshapes=" + shapes + "\n";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Scene [width=").append(width).append(", height=").append(height).append("]\n");
+        sb.append("\tcamera= ").append(camera).append("\n");
+        sb.append("\toutput= ").append(output).append("\n");
+        sb.append("\tambient= ").append(ambient).append("\n");
+        sb.append("\tlights :\n");
+        for (AbstractLight light : lights) {
+            sb.append("\t\t").append(light).append("\n");
+        }
+        sb.append("\tshapes :\n");
+        for (Shape shape : shapes) {
+            sb.append("\t\t").append(shape).append("\n");
+        }
+        return sb.toString();
     }
 }

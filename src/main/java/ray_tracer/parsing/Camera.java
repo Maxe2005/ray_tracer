@@ -62,4 +62,11 @@ public class Camera {
         return fov;
     }
 
+    public String toString() {
+        return "Camera(lookFrom: [" + lookFromX + ", " + lookFromY + ", " + lookFromZ + "], "
+                + "lookAt: [" + lookAtX + ", " + lookAtY + ", " + lookAtZ + "], "
+                + "upDir: [" + upDirX + ", " + upDirY + ", " + upDirZ + "], "
+                + "fov: " + fov + ")";
+    }
+
 }

@@ -17,4 +17,8 @@ public class Point extends AbstractVec3 {
         return new Point(this.getX() * scalar, this.getY() * scalar, this.getZ() * scalar);
     }
 
+    public String toString() {
+        return "Point(" + getX() + ", " + getY() + ", " + getZ() + ")";
+    }
+
 }

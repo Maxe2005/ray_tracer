@@ -96,19 +96,19 @@ public abstract class AbstractVec3 {
      */
     public boolean equals(AbstractVec3 other) {
         return DoubleComparisonUtil.approximatelyEqual(this.getX(), other.getX()) &&
-               DoubleComparisonUtil.approximatelyEqual(this.getY(), other.getY()) &&
-               DoubleComparisonUtil.approximatelyEqual(this.getZ(), other.getZ());
+                DoubleComparisonUtil.approximatelyEqual(this.getY(), other.getY()) &&
+                DoubleComparisonUtil.approximatelyEqual(this.getZ(), other.getZ());
     }
 
-    protected double getX() {
+    public double getX() {
         return x;
     }
 
-    protected double getY() {
+    public double getY() {
         return y;
     }
 
-    protected double getZ() {
+    public double getZ() {
         return z;
     }
 }
