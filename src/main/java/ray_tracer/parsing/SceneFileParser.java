@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.shapes.Sphere;
+import ray_tracer.geometry.shapes.Triangle;
+import ray_tracer.geometry.shapes.Plane;
 import ray_tracer.geometry.Vector;
 import ray_tracer.geometry.Point;
 
@@ -21,6 +23,8 @@ public class SceneFileParser {
     static Color waitingSpecular = null;
     static boolean isSizeSet = false;
     static boolean isCameraSet = false;
+    static int maxVerts = 0;
+    static List<Point> vertexList = new ArrayList<>();
 
     public static Scene parse(String sceneDescriptionPath) throws ParserException {
         Path path = Paths.get(sceneDescriptionPath);
@@ -87,6 +91,18 @@ public class SceneFileParser {
             case "point":
                 parsePoint(params, scene, lineNumber);
                 break;
+            case "maxverts":
+                parseMaxVerts(params, scene, lineNumber);
+                break;
+            case "vertex":
+                parseVertex(params, scene, lineNumber);
+                break;
+            case "tri":
+                parseTriangle(params, scene, lineNumber);
+                break;
+            case "plane":
+                parsePlane(params, scene, lineNumber);
+                break;
             default:
                 addWarning("Mot-clé '" + keyword + "' inconnu", lineNumber, null);
         }
@@ -98,6 +114,8 @@ public class SceneFileParser {
         waitingSpecular = null;
         isSizeSet = false;
         isCameraSet = false;
+        maxVerts = 0;
+        vertexList.clear();
     }
 
     private static void handleFinalsErrors(Scene scene) throws ParserException {
@@ -115,6 +133,9 @@ public class SceneFileParser {
         }
         if (scene.getShapes().isEmpty()) {
             addWarning("Aucune forme spécifiée dans le fichier de scène.", 0, null);
+        }
+        if (maxVerts > 0 && vertexList.size() < maxVerts) {
+            addWarning("Le nombre de sommets définis est inférieur au maximum spécifié par maxverts.", 0, "Vous avez défini " + vertexList.size() + " sommets, mais le maxverts est de " + maxVerts + ".");
         }
     }
 
@@ -294,6 +315,100 @@ public class SceneFileParser {
             }
         } else {
             throw new ParserException("Paramètres de lumière ponctuelle invalides: Il faut exactement six paramètres (x y z r g b).", lineNumber);
+        }
+    }
+
+    private static void parseMaxVerts(String[] params, Scene scene, int lineNumber) throws ParserException {
+        // Ex: maxverts n
+        if (params.length == 1) {
+            try {
+                maxVerts = Integer.parseInt(params[0]);
+                if (maxVerts <= 0) {
+                    throw new ParserException("Le nombre maximum de sommets doit être un entier positif.", lineNumber);
+                }
+            } catch (NumberFormatException e) {
+                throw new ParserException("Paramètre maxverts invalide: " + e.getMessage(), lineNumber);
+            }
+        } else {
+            throw new ParserException("Paramètre maxverts invalide: Il faut exactement un entier.", lineNumber);
+        }
+    }
+
+    private static void parseVertex(String[] params, Scene scene, int lineNumber) throws ParserException {
+        // Ex: vertex x y z
+        if (params.length == 3) {
+            try {
+                if (maxVerts == 0) {
+                    throw new ParserException("Le nombre maximum de sommets (maxverts) doit être défini avant d'ajouter des sommets.", lineNumber);
+                }
+                if (vertexList.size() >= maxVerts) {
+                    addWarning("Le nombre maximum de sommets prévus dans le maxverts est atteint.", lineNumber, "Ce point sera ignoré. Pour augmenter cette limite, modifiez la valeur de maxverts.");
+                    return;
+                }
+                double x = Double.parseDouble(params[0]);
+                double y = Double.parseDouble(params[1]);
+                double z = Double.parseDouble(params[2]);
+                vertexList.add(new Point(x, y, z));
+            } catch (NumberFormatException e) {
+                throw new ParserException("Paramètres de sommet invalides: " + e.getMessage(), lineNumber);
+            }
+        } else {
+            throw new ParserException("Paramètres de sommet invalides: Il faut exactement trois paramètres (x y z).", lineNumber);
+        }
+    }
+
+    private static void parseTriangle(String[] params, Scene scene, int lineNumber) throws ParserException {
+        // Ex: tri v1 v2 v3
+        if (params.length == 3) {
+            try {
+                int v1 = Integer.parseInt(params[0]);
+                int v2 = Integer.parseInt(params[1]);
+                int v3 = Integer.parseInt(params[2]);
+                if (v1 < 0 || v1 >= vertexList.size() ||
+                    v2 < 0 || v2 >= vertexList.size() ||
+                    v3 < 0 || v3 >= vertexList.size()) {
+                    throw new ParserException("Indices de triangle invalides: Les indices doivent être compris entre 0 et " + (vertexList.size() - 1) + ".", lineNumber);
+                }
+                if (waitingDiffuse == null) {
+                    addWarning("Matériau non défini avant le triangle", lineNumber, " Vous n'avez pas défini de couleurs diffuse pour le triangle. Utilisation de la couleur par défaut (noir).");
+                }
+                if (waitingSpecular == null) {
+                    addWarning("Matériau non défini avant le triangle", lineNumber, " Vous n'avez pas défini de couleurs spéculaire pour le triangle. Utilisation de la couleur par défaut (noir).");
+                }
+                Point p1 = vertexList.get(v1);
+                Point p2 = vertexList.get(v2);
+                Point p3 = vertexList.get(v3);
+                scene.addShape(new Triangle(p1, p2, p3, waitingDiffuse, waitingSpecular));
+            } catch (NumberFormatException e) {
+                throw new ParserException("Paramètres de triangle invalides: " + e.getMessage(), lineNumber);
+            }
+        } else {
+            throw new ParserException("Paramètres de triangle invalides: Il faut exactement trois indices de sommet.", lineNumber);
+        }
+    }
+
+    private static void parsePlane(String[] params, Scene scene, int lineNumber) throws ParserException {
+        // Ex: plane pointX pointY pointZ normalX normalY normalZ
+        if (params.length == 6) {
+            try {
+                double pointX = Double.parseDouble(params[0]);
+                double pointY = Double.parseDouble(params[1]);
+                double pointZ = Double.parseDouble(params[2]);
+                double normalX = Double.parseDouble(params[3]);
+                double normalY = Double.parseDouble(params[4]);
+                double normalZ = Double.parseDouble(params[5]);
+                if (waitingDiffuse == null) {
+                    addWarning("Matériau non défini avant le plan", lineNumber, " Vous n'avez pas défini de couleurs diffuse pour le plan. Utilisation de la couleur par défaut (noir).");
+                }
+                if (waitingSpecular == null) {
+                    addWarning("Matériau non défini avant le plan", lineNumber, " Vous n'avez pas défini de couleurs spéculaire pour le plan. Utilisation de la couleur par défaut (noir).");
+                }
+                scene.addShape(new Plane(new Point(pointX, pointY, pointZ), new Vector(normalX, normalY, normalZ), waitingDiffuse, waitingSpecular));
+            } catch (NumberFormatException e) {
+                throw new ParserException("Paramètres de plan invalides: " + e.getMessage(), lineNumber);
+            }
+        } else {
+            throw new ParserException("Paramètres de plan invalides: Il faut exactement six paramètres (pointX pointY pointZ normalX normalY normalZ).", lineNumber);
         }
     }
 }

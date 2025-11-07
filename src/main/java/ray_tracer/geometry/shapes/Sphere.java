@@ -13,16 +13,6 @@ public class Sphere extends Shape {
         this.radius = radius;
     }
 
-    @Override
-    public Color getDiffuse() {
-        return diffuse;
-    }
-
-    @Override
-    public Color getSpecular() {
-        return specular;
-    }
-
     public double getX() {
         return center.getX();
     }

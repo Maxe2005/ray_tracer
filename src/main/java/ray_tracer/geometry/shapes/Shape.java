@@ -19,8 +19,13 @@ public abstract class Shape {
         }
     }
 
-    public abstract Color getDiffuse();
-    public abstract Color getSpecular();
+    public Color getDiffuse() {
+        return diffuse;
+    }
+
+    public Color getSpecular() {
+        return specular;
+    }
 
     public String toString() {
         return "Shape(diffuse: " + diffuse + ", specular: " + specular + ")";
