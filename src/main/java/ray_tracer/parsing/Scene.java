@@ -2,9 +2,12 @@ package ray_tracer.parsing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.shapes.Shape;
+import ray_tracer.geometry.Intersection;
+import ray_tracer.raytracer.Ray;
 
 public class Scene {
     private int width;
@@ -29,6 +32,30 @@ public class Scene {
             totalBlue += color.getB();
         }
         return totalBlue <= 1.0 && totalGreen <= 1.0 && totalRed <= 1.0;
+    }
+
+    public Optional<Intersection> intersect(Ray ray) {
+        if (!ray.isRayValid()) {
+            return Optional.empty();
+        }
+        List<Optional<Intersection>> intersections = new ArrayList<>();
+        for (Shape shape : shapes) {
+            Optional<Intersection> intersection = shape.intersect(ray);
+            if (intersection.isPresent()) {
+                intersections.add(intersection);
+            }
+        }
+        if (!intersections.isEmpty()) {
+            Optional<Intersection> closestIntersection = intersections.get(0);
+            for (Optional<Intersection> intersection : intersections) {
+                if (intersection.get().getDistance() < closestIntersection.get().getDistance()) {
+                    closestIntersection = intersection;
+                }
+            }
+            return closestIntersection;
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void addSize(int width, int height) throws NumberFormatException {

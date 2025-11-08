@@ -27,6 +27,10 @@ public class Ray {
         this.direction = dir;
     }
 
+    public boolean isRayValid() {
+        return origin != null && direction != null;
+    }
+
     public Point getOrigin() {
         return origin;
     }

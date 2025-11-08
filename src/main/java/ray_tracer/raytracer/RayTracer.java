@@ -1,6 +1,7 @@
 package ray_tracer.raytracer;
 
 import ray_tracer.parsing.Scene;
+import ray_tracer.geometry.Intersection;
 import ray_tracer.imaging.Color;
 
 public class RayTracer {
@@ -19,7 +20,7 @@ public class RayTracer {
         pixelWidth = pixelHeight * aspectRatio;
     }
 
-    public Color getPixelColor(Ray ray) {
+    public Color getPixelColor(Intersection intersection) {
         return scene.getAmbient();
     }
 
