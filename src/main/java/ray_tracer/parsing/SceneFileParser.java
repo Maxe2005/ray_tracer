@@ -411,4 +411,32 @@ public class SceneFileParser {
             throw new ParserException("Paramètres de plan invalides: Il faut exactement six paramètres (pointX pointY pointZ normalX normalY normalZ).", lineNumber);
         }
     }
+
+    /* Small helpers added to improve testability ------------------------------------------------- */
+    // Return a copy of warnings collected during parsing
+    static List<String> getWarnings() {
+        return new ArrayList<>(warnings);
+    }
+
+    // Clear internal state (useful between tests)
+    static void clearState() {
+        initVariables();
+    }
+
+    // Expose a few internals for assertions in tests
+    static int getMaxVerts() {
+        return maxVerts;
+    }
+
+    static List<Point> getVertexList() {
+        return new ArrayList<>(vertexList);
+    }
+
+    static Color getWaitingDiffuse() {
+        return waitingDiffuse;
+    }
+
+    static Color getWaitingSpecular() {
+        return waitingSpecular;
+    }
 }
