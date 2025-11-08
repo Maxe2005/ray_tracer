@@ -13,9 +13,9 @@ public class CameraTest {
                 0.0, 1.0, 0.0,
                 60.0);
 
-        assertEquals(1.0, c.getLookFromX(), 1e-12);
-        assertEquals(3.0, c.getLookFromZ(), 1e-12);
-        assertEquals(-1.0, c.getLookAtZ(), 1e-12);
+        assertEquals(1.0, c.getLookFrom().getX(), 1e-12);
+        assertEquals(3.0, c.getLookFrom().getZ(), 1e-12);
+        assertEquals(-1.0, c.getLookAt().getZ(), 1e-12);
         assertEquals(60.0, c.getFov(), 1e-12);
 
         String s = c.toString();

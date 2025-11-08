@@ -3,8 +3,10 @@ package ray_tracer;
 import ray_tracer.parsing.Scene;
 import ray_tracer.parsing.SceneFileParser;
 import ray_tracer.parsing.ParserException;
+import ray_tracer.imaging.GenerateImage;
 
 public class Main {
+    private static Scene scene;
     public static void main(String[] args) {
 
         if (args.length != 1) {
@@ -12,7 +14,7 @@ public class Main {
             return;
         }
         try {
-            Scene scene = SceneFileParser.parse(args[0]);
+            scene = SceneFileParser.parse(args[0]);
             System.out.println("\nScene parsed successfully: " + (scene != null));
             if (scene != null) {
                 System.out.println("\n" + scene);
@@ -21,5 +23,7 @@ public class Main {
             System.err.println("Error parsing scene file: ");
             e.printError();
         }
+
+        GenerateImage.render(scene);
     }
 }

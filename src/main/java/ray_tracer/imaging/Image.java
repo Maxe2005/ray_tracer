@@ -31,6 +31,16 @@ public class Image {
         pixels[x][y] = color;
     }
 
+    public void flipUpDown() {
+        Color[][] flippedPixels = new Color[width][height];
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                flippedPixels[x][height - y - 1] = pixels[x][y];
+            }
+        }
+        pixels = flippedPixels;
+    }
+
     public int getWidth() {
         return width;
     }

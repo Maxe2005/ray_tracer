@@ -36,6 +36,7 @@ public class GenerateImage {
                 }
             }
         }
+        image.flipUpDown();
         writeImage(image, scene.getOutputFile());
     }
 
