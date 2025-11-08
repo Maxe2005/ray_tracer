@@ -1,6 +1,10 @@
 package ray_tracer.geometry.shapes;
 
 import ray_tracer.imaging.Color;
+import ray_tracer.geometry.Intersection;
+import ray_tracer.raytracer.Ray;
+
+import java.util.Optional;
 
 public abstract class Shape {
     protected final Color diffuse;
@@ -18,6 +22,8 @@ public abstract class Shape {
             this.specular = specular;
         }
     }
+
+    public abstract Optional<Intersection> intersect(Ray ray);
 
     public Color getDiffuse() {
         return diffuse;

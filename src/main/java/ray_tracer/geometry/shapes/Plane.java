@@ -1,8 +1,12 @@
 package ray_tracer.geometry.shapes;
 
+import java.util.Optional;
+
+import ray_tracer.geometry.Intersection;
 import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
 import ray_tracer.imaging.Color;
+import ray_tracer.raytracer.Ray;
 
 public class Plane extends Shape {
     private final Point point;
@@ -12,6 +16,11 @@ public class Plane extends Shape {
         super(diffuse, specular);
         this.point = point;
         this.normal = normal;
+    }
+
+    @Override
+    public Optional<Intersection> intersect(Ray ray) {
+        return Optional.empty();
     }
 
     public Point getPoint() {

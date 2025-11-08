@@ -8,19 +8,19 @@ public class Vector extends AbstractVec3 {
     }
 
     @Override
-    public AbstractVec3 addition(AbstractVec3 other) {
+    public Vector addition(AbstractVec3 other) {
         Vector o = (Vector) other;
         return new Vector(this.getX() + o.getX(), this.getY() + o.getY(), this.getZ() + o.getZ());
     }
 
     @Override
-    public AbstractVec3 subtraction(AbstractVec3 other) {
+    public Vector subtraction(AbstractVec3 other) {
         Vector o = (Vector) other;
         return new Vector(this.getX() - o.getX(), this.getY() - o.getY(), this.getZ() - o.getZ());
     }
 
     @Override
-    public AbstractVec3 scalarMultiplication(double scalar) {
+    public Vector scalarMultiplication(double scalar) {
         return new Vector(this.getX() * scalar, this.getY() * scalar, this.getZ() * scalar);
     }
 
@@ -31,7 +31,7 @@ public class Vector extends AbstractVec3 {
     }
 
     @Override
-    public AbstractVec3 vectorialProduct(AbstractVec3 other) {
+    public Vector vectorialProduct(AbstractVec3 other) {
         Vector o = (Vector) other;
         return new Vector(
             this.getY() * o.getZ() - this.getZ() * o.getY(),
@@ -46,7 +46,7 @@ public class Vector extends AbstractVec3 {
     }
 
     @Override
-    public AbstractVec3 normalize() throws ArithmeticException {
+    public Vector normalize() throws ArithmeticException {
         double norm = this.norm();
         if (norm == 0) {
             throw new ArithmeticException("Cannot normalize a zero vector.");

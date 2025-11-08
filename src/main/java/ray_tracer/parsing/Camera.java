@@ -1,61 +1,41 @@
 package ray_tracer.parsing;
 
+import ray_tracer.geometry.Point;
+import ray_tracer.geometry.Vector;
+
 public class Camera {
-    private double lookFromX, lookFromY, lookFromZ;
-    private double lookAtX, lookAtY, lookAtZ;
-    private double upDirX, upDirY, upDirZ;
+    private Point lookFrom;
+    private Point lookAt;
+    private Vector upDir;
     private double fov;
 
     public Camera(double lookFromX, double lookFromY, double lookFromZ,
             double lookAtX, double lookAtY, double lookAtZ,
             double upDirX, double upDirY, double upDirZ,
             double fov) {
-        this.lookFromX = lookFromX;
-        this.lookFromY = lookFromY;
-        this.lookFromZ = lookFromZ;
-        this.lookAtX = lookAtX;
-        this.lookAtY = lookAtY;
-        this.lookAtZ = lookAtZ;
-        this.upDirX = upDirX;
-        this.upDirY = upDirY;
-        this.upDirZ = upDirZ;
+        this.lookFrom = new Point(lookFromX, lookFromY, lookFromZ);
+        this.lookAt = new Point(lookAtX, lookAtY, lookAtZ);
+        this.upDir = new Vector(upDirX, upDirY, upDirZ);
         this.fov = fov;
     }
 
-    public double getLookFromX() {
-        return lookFromX;
+    public double getRadiansFov() {
+        return (fov * Math.PI) / 180.0;
     }
 
-    public double getLookFromY() {
-        return lookFromY;
+    public Vector getDirection() {
+        return lookFrom.subtraction(lookAt).normalize();
     }
 
-    public double getLookFromZ() {
-        return lookFromZ;
+    public Point getLookFrom() {
+        return lookFrom;
+    }
+    public Point getLookAt() {
+        return lookAt;
     }
 
-    public double getLookAtX() {
-        return lookAtX;
-    }
-
-    public double getLookAtY() {
-        return lookAtY;
-    }
-
-    public double getLookAtZ() {
-        return lookAtZ;
-    }
-
-    public double getUpDirX() {
-        return upDirX;
-    }
-
-    public double getUpDirY() {
-        return upDirY;
-    }
-
-    public double getUpDirZ() {
-        return upDirZ;
+    public Vector getUpDir() {
+        return upDir;
     }
 
     public double getFov() {
@@ -63,10 +43,9 @@ public class Camera {
     }
 
     public String toString() {
-        return "Camera(lookFrom: [" + lookFromX + ", " + lookFromY + ", " + lookFromZ + "], "
-                + "lookAt: [" + lookAtX + ", " + lookAtY + ", " + lookAtZ + "], "
-                + "upDir: [" + upDirX + ", " + upDirY + ", " + upDirZ + "], "
+        return "Camera(lookFrom: [" + lookFrom + "], "
+                + "lookAt: [" + lookAt + "], "
+                + "upDir: [" + upDir + "], "
                 + "fov: " + fov + ")";
     }
-
 }
