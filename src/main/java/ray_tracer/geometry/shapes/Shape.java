@@ -23,7 +23,9 @@ public abstract class Shape {
         }
     }
 
-    public abstract Optional<Intersection> intersect(Ray ray);
+    public Optional<Intersection> intersect(Ray ray) {
+        return Optional.empty();
+    }
 
     public Color getDiffuse() {
         return diffuse;
