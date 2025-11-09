@@ -17,6 +17,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 
+TESTS_AUTO_DIR="$SCRIPT_DIR/tests_auto"
+mkdir -p "$TESTS_AUTO_DIR"
+
 if [ -f "$ENV_FILE" ]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"
@@ -67,7 +70,7 @@ shopt -u nullglob
 # Build Maven before running tests (cache la sortie dans .mvn_build.log)
 info "Lancement de la build Maven (mvn package) dans $SCRIPT_DIR ..."
 pushd "$SCRIPT_DIR" >/dev/null
-MVN_LOG_FILE="$SCRIPT_DIR/.mvn_build.log"
+MVN_LOG_FILE="$TESTS_AUTO_DIR/.mvn_build.log"
 rm -f "$MVN_LOG_FILE"
 if command -v mvn >/dev/null 2>&1; then
   # Exécute en silencieux et redirige toute la sortie vers le fichier de log
@@ -185,7 +188,6 @@ for f in "${files[@]}"; do
     echo
 
     # Rassembler les fichiers générés dans tests_auto/<jalon>/<base>/
-    TESTS_AUTO_DIR="$SCRIPT_DIR/tests_auto"
     DEST_DIR="$TESTS_AUTO_DIR/$jalon/$base"
     mkdir -p "$DEST_DIR"
 
@@ -210,5 +212,7 @@ for f in "${files[@]}"; do
     echo "  Fichiers copiés dans: $DEST_DIR"
   fi
 done
+
+rm -r "$OUTPUT_DIR"
 
 echo "Terminé." 
