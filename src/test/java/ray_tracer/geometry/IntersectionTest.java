@@ -29,6 +29,9 @@ public class IntersectionTest {
         assertEquals(r, inter.getRay());
         assertEquals(2.5, inter.getDistance(), 1e-12);
         assertEquals(s, inter.getShape());
+        // The constructor should compute the intersection point and normal
+        assertTrue(inter.getNormal().equals(new ray_tracer.geometry.Vector(0, 0, 1)));
+        assertTrue(inter.getPoint().equals(r.getPointAtDistance(2.5)));
     }
 
 }
