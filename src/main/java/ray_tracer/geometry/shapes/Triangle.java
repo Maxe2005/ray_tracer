@@ -6,6 +6,7 @@ import ray_tracer.geometry.Intersection;
 import ray_tracer.geometry.Point;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
+import ray_tracer.geometry.Vector;
 
 public class Triangle extends Shape {
     private final Point v0;
@@ -34,6 +35,13 @@ public class Triangle extends Shape {
 
     public Point getV2() {
         return v2;
+    }
+
+    @Override
+    public Vector getNormalAt(Point point) {
+        Vector edge1 = v1.subtraction(v0);
+        Vector edge2 = v2.subtraction(v0);
+        return edge1.vectorialProduct(edge2).normalize();
     }
 
     @Override

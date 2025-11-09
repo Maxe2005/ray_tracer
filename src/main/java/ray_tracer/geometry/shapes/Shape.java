@@ -3,6 +3,8 @@ package ray_tracer.geometry.shapes;
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.raytracer.Ray;
+import ray_tracer.geometry.Point;
+import ray_tracer.geometry.Vector;
 
 import java.util.Optional;
 
@@ -25,6 +27,10 @@ public abstract class Shape {
 
     public Optional<Intersection> intersect(Ray ray) {
         return Optional.empty();
+    }
+
+    public Vector getNormalAt(Point point) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("getNormalAt method not implemented for this shape type.");
     }
 
     public Color getDiffuse() {

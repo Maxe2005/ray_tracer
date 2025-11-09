@@ -27,6 +27,10 @@ public class Ray {
         this.direction = dir;
     }
 
+    public Point getPointAtDistance(double distance) {
+        return origin.addition(direction.scalarMultiplication(distance));
+    }
+
     public boolean isRayValid() {
         return origin != null && direction != null;
     }

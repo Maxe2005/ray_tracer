@@ -48,6 +48,11 @@ public class RayTracerTest {
             public Optional<Intersection> intersect(ray_tracer.raytracer.Ray ray) {
                 return Optional.empty();
             }
+            @Override
+            public ray_tracer.geometry.Vector getNormalAt(ray_tracer.geometry.Point point) {
+                // Return a valid normal so Intersection construction won't throw.
+                return new ray_tracer.geometry.Vector(0, 0, 1);
+            }
         };
         Intersection inter = new Intersection(new ray_tracer.raytracer.Ray(new Point(0,0,0), new Vector(1,0,0)), 1.0, s);
 

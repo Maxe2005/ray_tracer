@@ -7,6 +7,12 @@ public class Point extends AbstractVec3 {
         super(x, y, z);
     }
 
+    // Pas demandé dans le jalon 1 mais utile pour le jalon 4 : calcul du point d'intersection
+    @Override
+    public Point addition(AbstractVec3 other) {
+        return new Point(this.getX() + other.getX(), this.getY() + other.getY(), this.getZ() + other.getZ());
+    }
+
     @Override
     public Vector subtraction(AbstractVec3 other) {
         return new Vector(this.getX() - other.getX(), this.getY() - other.getY(), this.getZ() - other.getZ());

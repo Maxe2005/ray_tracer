@@ -32,6 +32,11 @@ public class Plane extends Shape {
     }
 
     @Override
+    public Vector getNormalAt(Point point) {
+        return normal;
+    }
+
+    @Override
     public String toString() {
         return "Plane(point: " + point + ", normal: " + normal
                 + ", diffuse: " + getDiffuse() + ", specular: " + getSpecular() + ")";

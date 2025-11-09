@@ -23,18 +23,18 @@ public class Color extends AbstractVec3 {
     }
 
     @Override
-    public AbstractVec3 addition(AbstractVec3 other) {
+    public Color addition(AbstractVec3 other) {
         Color o = (Color) other;
         return new Color(this.getR() + o.getR(), this.getG() + o.getG(), this.getB() + o.getB());
     }
 
     @Override
-    public AbstractVec3 scalarMultiplication(double scalar) {
+    public Color scalarMultiplication(double scalar) {
         return new Color(this.getR() * scalar, this.getG() * scalar, this.getB() * scalar);
     }
 
     @Override
-    public AbstractVec3 schurProduct(AbstractVec3 other) {
+    public Color schurProduct(AbstractVec3 other) {
         Color o = (Color) other;
         return new Color(this.getR() * o.getR(), this.getG() * o.getG(), this.getB() * o.getB());
     }

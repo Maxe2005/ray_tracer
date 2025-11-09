@@ -58,6 +58,14 @@ public class Scene {
         }
     }
 
+    public Color getTotalColorAt(Intersection intersection){
+        Color totalLight = ambient;
+        for (AbstractLight light : lights) {
+            totalLight = totalLight.addition(light.getColorAt(intersection));
+        }
+        return totalLight;
+    }
+
     public void addSize(int width, int height) throws NumberFormatException {
         if (width <= 0 || height <= 0){
             throw new NumberFormatException("Width and height must be positive integers.");

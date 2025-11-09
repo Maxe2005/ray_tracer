@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import ray_tracer.geometry.shapes.Shape;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
-import ray_tracer.geometry.Point;
-import ray_tracer.geometry.Vector;
 
 import java.util.Optional;
 
@@ -20,6 +18,11 @@ public class IntersectionTest {
             @Override
             public Optional<Intersection> intersect(ray_tracer.raytracer.Ray ray) {
                 return Optional.empty();
+            }
+            @Override
+            public ray_tracer.geometry.Vector getNormalAt(ray_tracer.geometry.Point point) {
+                // Provide a default normal for tests that create anonymous shapes.
+                return new ray_tracer.geometry.Vector(0, 0, 1);
             }
         };
         Intersection inter = new Intersection(r, 2.5, s);

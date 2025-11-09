@@ -56,6 +56,11 @@ public class Sphere extends Shape {
         }
     }
 
+    @Override
+    public Vector getNormalAt(Point point) {
+        return point.subtraction(center).normalize();
+    }
+
     public double getX() {
         return center.getX();
     }

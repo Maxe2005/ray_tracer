@@ -21,7 +21,7 @@ public class RayTracer {
     }
 
     public Color getPixelColor(Intersection intersection) {
-        return scene.getAmbient();
+        return scene.getTotalColorAt(intersection);
     }
 
     public double getPixelHeight() {
