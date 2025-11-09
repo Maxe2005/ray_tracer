@@ -65,5 +65,5 @@ mvnw
 mvnw.cmd
 /.mvn/
 
-# Generated sources
 /*.png
+/tests_auto/
