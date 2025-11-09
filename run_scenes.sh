@@ -17,14 +17,32 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 
+TESTS_AUTO_DIR="$SCRIPT_DIR/tests_auto"
+mkdir -p "$TESTS_AUTO_DIR"
+
 if [ -f "$ENV_FILE" ]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"
 fi
 
+# Couleurs pour sortie terminal
+NC="\033[0m"       # No Color
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+BLUE="\033[0;34m"
+CYAN="\033[0;36m"
+WHITE="\033[1;37m"
+
+info(){ echo -e "${BLUE}$*${NC}"; }
+ok(){ echo -e "${GREEN}$*${NC}"; }
+warn(){ echo -e "${YELLOW}$*${NC}"; }
+err(){ echo -e "${RED}$*${NC}" >&2; }
+cmd(){ echo -e "${CYAN}$*${NC}"; }
+
 if [ -z "${ACTUAL_JALON:-}" ]; then
-  echo "Erreur: ACTUAL_JALON non défini dans $ENV_FILE."
-  echo "Définissez ACTUAL_JALON=jalon4 (ou 4) dans $ENV_FILE puis relancez." >&2
+  err "Erreur: ACTUAL_JALON non défini dans $ENV_FILE."
+  err "Définissez ACTUAL_JALON=jalon4 (ou 4) dans $ENV_FILE puis relancez."
   exit 1
 fi
 
@@ -36,7 +54,7 @@ fi
 
 SCENES_DIR="$SCRIPT_DIR/src/main/resources/scenes/$jalon"
 if [ ! -d "$SCENES_DIR" ]; then
-  echo "Erreur: répertoire de scènes introuvable : $SCENES_DIR" >&2
+  err "Erreur: répertoire de scènes introuvable : $SCENES_DIR"
   exit 2
 fi
 
@@ -49,37 +67,41 @@ for j in "$SCRIPT_DIR"/target/ray_tracer-*.jar; do
 done
 shopt -u nullglob
 
-# Build Maven before running tests
-echo "Lancement de la build Maven (mvn package) dans $SCRIPT_DIR ..."
+# Build Maven before running tests (cache la sortie dans .mvn_build.log)
+info "Lancement de la build Maven (mvn package) dans $SCRIPT_DIR ..."
 pushd "$SCRIPT_DIR" >/dev/null
+MVN_LOG_FILE="$TESTS_AUTO_DIR/.mvn_build.log"
+rm -f "$MVN_LOG_FILE"
 if command -v mvn >/dev/null 2>&1; then
-  # On exécute en silencieux (-q) pour réduire la verbosité. Enlevez -q si vous voulez voir tout.
-  mvn -q package
+  # Exécute en silencieux et redirige toute la sortie vers le fichier de log
+  mvn -q package >"$MVN_LOG_FILE" 2>&1
   mvn_rc=$?
   if [ $mvn_rc -ne 0 ]; then
-    echo "Erreur : mvn package a échoué (code $mvn_rc). Arrêt." >&2
+    echo "Erreur : mvn package a échoué (code $mvn_rc). Voir le log : $MVN_LOG_FILE" >&2
+    echo "----- Dernières lignes du log Maven -----" >&2
+    tail -n 200 "$MVN_LOG_FILE" >&2 || true
     popd >/dev/null
     exit 5
   fi
 else
-  echo "Erreur : 'mvn' introuvable dans le PATH. Installez Maven ou exécutez manuellement 'mvn package'." >&2
+  err "Erreur : 'mvn' introuvable dans le PATH. Installez Maven ou exécutez manuellement 'mvn package'."
   popd >/dev/null
   exit 6
 fi
 popd >/dev/null
 
 if [ -z "$JAR_PATH" ]; then
-  echo "Aucun JAR trouvé dans $SCRIPT_DIR/target (pattern: ray_tracer-*.jar)." >&2
-  echo "Construisez d'abord le projet : mvn package" >&2
+  err "Aucun JAR trouvé dans $SCRIPT_DIR/target (pattern: ray_tracer-*.jar)."
+  err "Construisez d'abord le projet : mvn package"
   exit 3
 fi
 
 # Classe main par défaut (modifiable via .env : MAIN_CLASS=...)
 MAIN_CLASS="${MAIN_CLASS:-ray_tracer.Main}"
 
-echo "ACTUAL_JALON = $ACTUAL_JALON -> utilisation du dossier: $SCENES_DIR"
-echo "JAR utilisé : $JAR_PATH"
-echo "Main class   : $MAIN_CLASS"
+info "ACTUAL_JALON = $ACTUAL_JALON -> utilisation du dossier: $SCENES_DIR"
+cmd "JAR utilisé : $JAR_PATH"
+cmd "Main class   : $MAIN_CLASS"
 echo
 
 # emplacement possible du comparateur d'images (modifiable si besoin)
@@ -97,27 +119,30 @@ if [ ${#files[@]} -eq 0 ]; then
   exit 4
 fi
 
-echo "Fichiers trouvés :"
+info "Fichiers trouvés :"
 for f in "${files[@]}"; do
-  echo " - $f"
+  echo -e "  ${YELLOW}- ${f}${NC}"
 done
 echo
 
 # Exécuter chaque fichier
 for f in "${files[@]}"; do
-  echo "================================================================"
-  echo "Fichier : $f"
-  echo "Commande: java -cp '$JAR_PATH' $MAIN_CLASS '$f'"
-  echo "----------------------------------------------------------------"
+  echo -e "${CYAN}================================================================${NC}"
+  echo -e "${CYAN}Fichier : ${WHITE:-}$f${NC}"
+  cmd "Commande: java -cp '$JAR_PATH' $MAIN_CLASS '$f'"
+  echo -e "${CYAN}----------------------------------------------------------------${NC}"
 
   # Exécuter et afficher la sortie en direct. On capture le code retour.
   set +e
   java -cp "$JAR_PATH" "$MAIN_CLASS" "$f"
   rc=$?
   set -e
-
-  echo "----------------------------------------------------------------"
-  echo "Exit code: $rc"
+  echo -e "${CYAN}----------------------------------------------------------------${NC}"
+  if [ $rc -eq 0 ]; then
+    ok "Exit code: $rc"
+  else
+    err "Exit code: $rc"
+  fi
   echo
 
   # Si c'est un fichier .test, tenter une comparaison d'image
@@ -161,7 +186,33 @@ for f in "${files[@]}"; do
       echo "  -> Diff trouvé (ou erreur). Résultat enregistré: $out_compare"
     fi
     echo
+
+    # Rassembler les fichiers générés dans tests_auto/<jalon>/<base>/
+    DEST_DIR="$TESTS_AUTO_DIR/$jalon/$base"
+    mkdir -p "$DEST_DIR"
+
+    # Copier le fichier .test original
+    cp -f "$f" "$DEST_DIR/${base}.test"
+
+    # Copier l'image modèle (attendue) si présente
+    if [ -f "$expected" ]; then
+      cp -f "$expected" "$DEST_DIR/${base}-model.png"
+    fi
+
+    # Déplacer l'image générée (produced)
+    if [ -f "$produced" ]; then
+      mv -f "$produced" "$DEST_DIR/${base}-genere.png"
+    fi
+
+    # Déplacer le résultat de comparaison
+    if [ -f "$out_compare" ]; then
+      mv -f "$out_compare" "$DEST_DIR/${base}-comparison.png"
+    fi
+
+    echo "  Fichiers copiés dans: $DEST_DIR"
   fi
 done
+
+rm -r "$OUTPUT_DIR"
 
 echo "Terminé." 
