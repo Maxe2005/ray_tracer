@@ -64,3 +64,6 @@ desktop.ini
 mvnw
 mvnw.cmd
 /.mvn/
+
+/*.png
+/tests_auto/
