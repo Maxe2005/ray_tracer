@@ -67,3 +67,4 @@ mvnw.cmd
 
 # Generated sources
 /*.png
+/outputs
