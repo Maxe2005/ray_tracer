@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import ray_tracer.geometry.shapes.Shape;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
-import ray_tracer.geometry.Point;
-import ray_tracer.geometry.Vector;
 
 import java.util.Optional;
 
