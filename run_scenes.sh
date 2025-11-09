@@ -211,4 +211,7 @@ for f in "${files[@]}"; do
   fi
 done
 
+rm -r "$OUTPUT_DIR"
+mv "$MVN_LOG_FILE" "$TESTS_AUTO_DIR"
+
 echo "Terminé." 
