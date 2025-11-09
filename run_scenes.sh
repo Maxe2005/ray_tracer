@@ -49,6 +49,25 @@ for j in "$SCRIPT_DIR"/target/ray_tracer-*.jar; do
 done
 shopt -u nullglob
 
+# Build Maven before running tests
+echo "Lancement de la build Maven (mvn package) dans $SCRIPT_DIR ..."
+pushd "$SCRIPT_DIR" >/dev/null
+if command -v mvn >/dev/null 2>&1; then
+  # On exécute en silencieux (-q) pour réduire la verbosité. Enlevez -q si vous voulez voir tout.
+  mvn -q package
+  mvn_rc=$?
+  if [ $mvn_rc -ne 0 ]; then
+    echo "Erreur : mvn package a échoué (code $mvn_rc). Arrêt." >&2
+    popd >/dev/null
+    exit 5
+  fi
+else
+  echo "Erreur : 'mvn' introuvable dans le PATH. Installez Maven ou exécutez manuellement 'mvn package'." >&2
+  popd >/dev/null
+  exit 6
+fi
+popd >/dev/null
+
 if [ -z "$JAR_PATH" ]; then
   echo "Aucun JAR trouvé dans $SCRIPT_DIR/target (pattern: ray_tracer-*.jar)." >&2
   echo "Construisez d'abord le projet : mvn package" >&2
