@@ -162,6 +162,9 @@ public class SceneFileParser {
             try {
                 int width = Integer.parseInt(params[0]);
                 int height = Integer.parseInt(params[1]);
+                if (scene.getHeight() > 0 && scene.getWidth() > 0 && height > 0 && width > 0) {
+                    addWarning("La taille a déjà été définie précédemment.", lineNumber, "Vous redéfinissez la taille de la scène. La dernière valeur sera utilisée.");
+                }
                 scene.addSize(width, height);
             } catch (NumberFormatException e) {
                 throw new ParserException("Taille invalide: " + e.getMessage(), lineNumber);
@@ -175,6 +178,9 @@ public class SceneFileParser {
         // Ex: output filename
         if (params.length == 1) {
             String filename = params[0];
+            if (scene.getOutputFile() != null) {
+                addWarning("Le fichier de sortie a déjà été défini précédemment.", lineNumber, "Vous redéfinissez le fichier de sortie. La dernière valeur sera utilisée.");
+            }
             scene.setOutputFile(filename);
         } else {
             throw new ParserException("Sortie invalide: Il faut exactement un nom de fichier.", lineNumber);
@@ -195,6 +201,9 @@ public class SceneFileParser {
                 double upDirY = Double.parseDouble(params[7]);
                 double upDirZ = Double.parseDouble(params[8]);
                 double fov = Double.parseDouble(params[9]);
+                if (scene.getCamera() != null) {
+                    addWarning("La caméra a déjà été définie précédemment.", lineNumber, "Vous redéfinissez la caméra de la scène. La dernière valeur sera utilisée.");
+                }
                 scene.setCamera(new Camera(lookFromX, lookFromY, lookFromZ, lookAtX, lookAtY, lookAtZ, upDirX, upDirY, upDirZ, fov));
             } catch (NumberFormatException e) {
                 throw new ParserException("Paramètres de caméra invalides: " + e.getMessage(), lineNumber);
@@ -211,6 +220,9 @@ public class SceneFileParser {
                 double r = Double.parseDouble(params[0]);
                 double g = Double.parseDouble(params[1]);
                 double b = Double.parseDouble(params[2]);
+                if (scene.getAmbient() != null) {
+                    addWarning("La couleur ambiante a déjà été définie précédemment.", lineNumber, "Vous redéfinissez la couleur ambiante de la scène. La dernière valeur sera utilisée.");
+                }
                 scene.setAmbient(new Color(r, g, b));
             } catch (NumberFormatException e) {
                 throw new ParserException("Couleur ambiante invalide: " + e.getMessage(), lineNumber);
@@ -326,6 +338,7 @@ public class SceneFileParser {
                 if (maxVerts <= 0) {
                     throw new ParserException("Le nombre maximum de sommets doit être un entier positif.", lineNumber);
                 }
+                vertexList.clear();
             } catch (NumberFormatException e) {
                 throw new ParserException("Paramètre maxverts invalide: " + e.getMessage(), lineNumber);
             }
@@ -342,7 +355,7 @@ public class SceneFileParser {
                     throw new ParserException("Le nombre maximum de sommets (maxverts) doit être défini avant d'ajouter des sommets.", lineNumber);
                 }
                 if (vertexList.size() >= maxVerts) {
-                    addWarning("Le nombre maximum de sommets prévus dans le maxverts est atteint.", lineNumber, "Ce point sera ignoré. Pour augmenter cette limite, modifiez la valeur de maxverts.");
+                    addWarning("Le nombre maximum de sommets prévus dans le dernier maxverts déclaré est atteint.", lineNumber, "Ce point sera ignoré. Pour augmenter cette limite, modifiez la valeur de maxverts.");
                     return;
                 }
                 double x = Double.parseDouble(params[0]);
