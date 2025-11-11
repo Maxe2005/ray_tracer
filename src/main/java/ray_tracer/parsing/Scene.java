@@ -7,10 +7,11 @@ import ray_tracer.imaging.Color;
 import ray_tracer.geometry.shapes.Shape;
 
 public class Scene {
+    public static final String DEFAULT_OUTPUT = "output.png";
     private int width;
     private int height;
     private Camera camera;
-    private String output = "output.png";
+    private String output = DEFAULT_OUTPUT;
     private Color ambient = new Color();
     private List<AbstractLight> lights = new ArrayList<>();
     private List<Shape> shapes = new ArrayList<>();
