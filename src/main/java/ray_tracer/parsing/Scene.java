@@ -61,7 +61,11 @@ public class Scene {
     public Color getTotalColorAt(Intersection intersection){
         Color totalLight = ambient;
         for (AbstractLight light : lights) {
-            totalLight = totalLight.addition(light.getColorAt(intersection));
+            Ray shadowRay = new Ray(intersection.getPoint(), light.getDirectionFrom(intersection.getPoint()));
+            Optional<Intersection> ombreIntersection = intersect(shadowRay);
+            if (!ombreIntersection.isPresent()){//} || ombreIntersection.get().getDistance() < 1e-9) {
+                totalLight = totalLight.addition(light.getColorAt(intersection, camera.getDirection()));
+            }
         }
         return totalLight;
     }

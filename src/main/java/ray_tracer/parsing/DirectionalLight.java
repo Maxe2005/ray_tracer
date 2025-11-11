@@ -1,6 +1,7 @@
 package ray_tracer.parsing;
 
 import ray_tracer.geometry.Vector;
+import ray_tracer.geometry.Point;
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.Intersection;
 
@@ -13,8 +14,25 @@ public class DirectionalLight extends AbstractLight {
     }
 
     @Override
-    public Color getColorAt(Intersection intersection) {
-        return this.getColor().scalarMultiplication(Math.max(intersection.getNormal().scalarProduct(direction), 0.0)).schurProduct(intersection.getShape().getDiffuse());
+    public Color getColorAt(Intersection intersection, Vector eyeDirection) {
+        return calculDiffusionLambert(intersection).addition(calculSpeculairePhong(intersection, eyeDirection));
+    }
+
+    private Color calculDiffusionLambert(Intersection intersection) {
+        double intensity = Math.max(intersection.getNormal().scalarProduct(direction), 0.0);
+        return this.getColor().scalarMultiplication(intensity).schurProduct(intersection.getShape().getDiffuse());
+    }
+
+    private Color calculSpeculairePhong(Intersection intersection, Vector eyeDirection) {
+        Vector reflectDir = direction.addition(eyeDirection).normalize();
+        double specAngle = Math.max(reflectDir.scalarProduct(intersection.getNormal()), 0.0);
+        double specularCoefficient = Math.pow(specAngle, intersection.getShape().getShininess());
+        return this.getColor().scalarMultiplication(specularCoefficient).schurProduct(intersection.getShape().getSpecular());
+    }
+
+    @Override
+    public Vector getDirectionFrom(Point point) {
+        return direction;
     }
 
     public Vector getDirection() {

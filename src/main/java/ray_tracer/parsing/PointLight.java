@@ -14,9 +14,26 @@ public class PointLight extends AbstractLight {
     }
 
     @Override
-    public Color getColorAt(Intersection intersection) {
-        Vector direction = position.subtraction(intersection.getPoint());
-        return this.getColor().scalarMultiplication(Math.max(intersection.getNormal().scalarProduct(direction), 0.0)).schurProduct(intersection.getShape().getDiffuse());
+    public Color getColorAt(Intersection intersection, Vector eyeDirection) {
+        Vector direction = getDirectionFrom(intersection.getPoint());
+        return calculDiffusionLambert(intersection, direction).addition(calculSpeculairePhong(intersection, eyeDirection, direction));
+    }
+
+    private Color calculDiffusionLambert(Intersection intersection, Vector direction) {
+        double intensity = Math.max(intersection.getNormal().scalarProduct(direction), 0.0);
+        return this.getColor().scalarMultiplication(intensity).schurProduct(intersection.getShape().getDiffuse());
+    }
+
+    private Color calculSpeculairePhong(Intersection intersection, Vector eyeDirection, Vector direction) {
+        Vector reflectDir = direction.addition(eyeDirection).normalize();
+        double specAngle = Math.max(reflectDir.scalarProduct(intersection.getNormal()), 0.0);
+        double specularCoefficient = Math.pow(specAngle, intersection.getShape().getShininess());
+        return this.getColor().scalarMultiplication(specularCoefficient).schurProduct(intersection.getShape().getSpecular());
+    }
+
+    @Override
+    public Vector getDirectionFrom(Point point) {
+        return position.subtraction(point).normalize();
     }
 
     public Point getPosition() {

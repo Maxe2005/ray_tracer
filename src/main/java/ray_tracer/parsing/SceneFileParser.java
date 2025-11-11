@@ -21,6 +21,7 @@ public class SceneFileParser {
     static List<String> warnings = new ArrayList<>();
     static Color waitingDiffuse = null;
     static Color waitingSpecular = null;
+    static int waitingShininess = 0;
     static boolean isSizeSet = false;
     static boolean isCameraSet = false;
     static int maxVerts = 0;
@@ -82,6 +83,9 @@ public class SceneFileParser {
             case "specular":
                 parseSpecular(params, scene, lineNumber);
                 break;
+            case "shininess":
+                parseShininess(params, scene, lineNumber);
+                break;
             case "sphere":
                 parseSphere(params, scene, lineNumber);
                 break;
@@ -112,6 +116,7 @@ public class SceneFileParser {
         warnings.clear();
         waitingDiffuse = null;
         waitingSpecular = null;
+        waitingShininess = 0;
         isSizeSet = false;
         isCameraSet = false;
         maxVerts = 0;
@@ -269,6 +274,23 @@ public class SceneFileParser {
         }
     }
 
+    private static void parseShininess(String[] params, Scene scene, int lineNumber) throws ParserException {
+        // Ex: shininess value
+        if (params.length == 1) {
+            try {
+                int shininess = Integer.parseInt(params[0]);
+                if (shininess < 0) {
+                    throw new ParserException("Valeur de brillance invalide: La brillance doit être un entier non négatif.", lineNumber);
+                }
+                waitingShininess = shininess;
+            } catch (NumberFormatException e) {
+                throw new ParserException("Valeur de brillance invalide: " + e.getMessage(), lineNumber);
+            }
+        } else {
+            throw new ParserException("Valeur de brillance invalide: Il faut exactement une valeur entière.", lineNumber);
+        }
+    }
+
     private static void parseSphere(String[] params, Scene scene, int lineNumber) throws ParserException {
         // Ex: sphere x y z radius
         if (params.length == 4) {
@@ -283,7 +305,7 @@ public class SceneFileParser {
                 if (waitingSpecular == null) {
                     addWarning("Matériau non défini avant la sphère", lineNumber, " Vous n'avez pas défini de couleurs spéculaire pour la sphère. Utilisation de la couleur par défaut (noir).");
                 }
-                scene.addShape(new Sphere(x, y, z, radius, waitingDiffuse, waitingSpecular));
+                scene.addShape(new Sphere(x, y, z, radius, waitingDiffuse, waitingSpecular, waitingShininess));
             } catch (NumberFormatException e) {
                 throw new ParserException("Paramètres de sphère invalides: " + e.getMessage(), lineNumber);
             }
@@ -391,7 +413,7 @@ public class SceneFileParser {
                 Point p1 = vertexList.get(v1);
                 Point p2 = vertexList.get(v2);
                 Point p3 = vertexList.get(v3);
-                scene.addShape(new Triangle(p1, p2, p3, waitingDiffuse, waitingSpecular));
+                scene.addShape(new Triangle(p1, p2, p3, waitingDiffuse, waitingSpecular, waitingShininess));
             } catch (NumberFormatException e) {
                 throw new ParserException("Paramètres de triangle invalides: " + e.getMessage(), lineNumber);
             }
@@ -416,7 +438,7 @@ public class SceneFileParser {
                 if (waitingSpecular == null) {
                     addWarning("Matériau non défini avant le plan", lineNumber, " Vous n'avez pas défini de couleurs spéculaire pour le plan. Utilisation de la couleur par défaut (noir).");
                 }
-                scene.addShape(new Plane(new Point(pointX, pointY, pointZ), new Vector(normalX, normalY, normalZ), waitingDiffuse, waitingSpecular));
+                scene.addShape(new Plane(new Point(pointX, pointY, pointZ), new Vector(normalX, normalY, normalZ), waitingDiffuse, waitingSpecular, waitingShininess));
             } catch (NumberFormatException e) {
                 throw new ParserException("Paramètres de plan invalides: " + e.getMessage(), lineNumber);
             }

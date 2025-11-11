@@ -9,10 +9,12 @@ import ray_tracer.geometry.Vector;
 import java.util.Optional;
 
 public abstract class Shape {
+    protected static final double EPSILON = 1e-6;
     protected final Color diffuse;
     protected final Color specular;
+    protected final int shininess;
 
-    public Shape(Color diffuse, Color specular) {
+    public Shape(Color diffuse, Color specular, int shininess) {
         if (diffuse == null) {
             this.diffuse = Color.BLACK;
         } else {
@@ -23,6 +25,7 @@ public abstract class Shape {
         } else {
             this.specular = specular;
         }
+        this.shininess = shininess;
     }
 
     public Optional<Intersection> intersect(Ray ray) {
@@ -41,7 +44,11 @@ public abstract class Shape {
         return specular;
     }
 
+    public int getShininess() {
+        return shininess;
+    }
+
     public String toString() {
-        return "Shape(diffuse: " + diffuse + ", specular: " + specular + ")";
+        return "Shape(diffuse: " + diffuse + ", specular: " + specular + ", shininess: " + shininess + ")";
     }
 }

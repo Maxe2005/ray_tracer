@@ -12,8 +12,8 @@ public class Sphere extends Shape {
     private final Point center;
     private final double radius;
 
-    public Sphere(double x, double y, double z, double radius, Color diffuse, Color specular) {
-        super(diffuse, specular);
+    public Sphere(double x, double y, double z, double radius, Color diffuse, Color specular, int shininess) {
+        super(diffuse, specular, shininess);
         this.center = new Point(x, y, z);
         this.radius = radius;
     }
@@ -34,7 +34,7 @@ public class Sphere extends Shape {
         } else if (discriminant == 0) {
             // Une seule intersection
             double t = -b / (2.0 * a);
-            if (t < 0) {
+            if (t < EPSILON) {
                 return Optional.empty(); // Pas d'intersection
             }
             return Optional.of(new Intersection(ray, t, this));
@@ -45,9 +45,9 @@ public class Sphere extends Shape {
 
             // On retourne l'intersection la plus proche
             double t = Math.min(t1, t2);
-            if (t < 0) {
+            if (t < EPSILON) {
                 t = Math.max(t1, t2);
-                if (t < 0) {
+                if (t < EPSILON) {
                     return Optional.empty(); // Pas d'intersection
                 }
             }

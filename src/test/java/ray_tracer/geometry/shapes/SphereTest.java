@@ -17,7 +17,7 @@ public class SphereTest {
 
     @Test
     public void miss_returns_empty() {
-        Sphere s = new Sphere(0.0, 0.0, 5.0, 1.0, new Color(), new Color());
+        Sphere s = new Sphere(0.0, 0.0, 5.0, 1.0, new Color(), new Color(), 10);
         Ray r = new Ray(new Point(0.0, 0.0, 0.0), new Vector(0.0, 1.0, 0.0));
 
         Optional<Intersection> inter = s.intersect(r);
@@ -26,7 +26,7 @@ public class SphereTest {
 
     @Test
     public void hit_returns_closest_intersection() {
-        Sphere s = new Sphere(0.0, 0.0, 5.0, 1.0, new Color(), new Color());
+        Sphere s = new Sphere(0.0, 0.0, 5.0, 1.0, new Color(), new Color(), 10);
         Ray r = new Ray(new Point(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 1.0));
 
         Optional<Intersection> inter = s.intersect(r);
@@ -38,7 +38,7 @@ public class SphereTest {
 
     @Test
     public void origin_inside_sphere_returns_positive_distance() {
-        Sphere s = new Sphere(0.0, 0.0, 0.0, 2.0, new Color(), new Color());
+        Sphere s = new Sphere(0.0, 0.0, 0.0, 2.0, new Color(), new Color(), 10);
         Ray r = new Ray(new Point(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 1.0));
 
         Optional<Intersection> inter = s.intersect(r);
@@ -49,7 +49,7 @@ public class SphereTest {
 
     @Test
     public void getters_and_toString() {
-        Sphere s = new Sphere(1.0, 2.0, 3.0, 4.5, new Color(0.1, 0.2, 0.3), new Color(0.4, 0.5, 0.6));
+        Sphere s = new Sphere(1.0, 2.0, 3.0, 4.5, new Color(0.1, 0.2, 0.3), new Color(0.4, 0.5, 0.6), 10);
 
         assertTrue(DoubleComparisonUtil.approximatelyEqual(1.0, s.getX()));
         assertTrue(DoubleComparisonUtil.approximatelyEqual(2.0, s.getY()));
@@ -64,7 +64,7 @@ public class SphereTest {
     public void getters_and_diffuse_specular() {
         Color diffuse = new Color(0.1, 0.2, 0.3);
         Color specular = new Color(0.4, 0.5, 0.6);
-        Sphere s = new Sphere(1.0, 2.0, 3.0, 4.5, diffuse, specular);
+        Sphere s = new Sphere(1.0, 2.0, 3.0, 4.5, diffuse, specular, 10);
 
         assertTrue(DoubleComparisonUtil.approximatelyEqual(1.0, s.getX()));
         assertTrue(DoubleComparisonUtil.approximatelyEqual(2.0, s.getY()));

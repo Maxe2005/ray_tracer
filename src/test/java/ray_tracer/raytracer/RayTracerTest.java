@@ -43,7 +43,7 @@ public class RayTracerTest {
         RayTracer rt = new RayTracer(scene);
 
         // build a dummy intersection
-        Shape s = new Shape(Color.WHITE, Color.BLACK) {
+        Shape s = new Shape(Color.WHITE, Color.BLACK, 10) {
             @Override
             public Optional<Intersection> intersect(ray_tracer.raytracer.Ray ray) {
                 return Optional.empty();

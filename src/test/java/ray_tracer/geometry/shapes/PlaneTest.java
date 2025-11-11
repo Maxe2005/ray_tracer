@@ -15,7 +15,7 @@ public class PlaneTest {
     public void getters_and_toString() {
         Point p = new Point(1.0, 0.0, -1.0);
         Vector n = new Vector(0.0, 1.0, 0.0);
-        Plane plane = new Plane(p, n, Color.WHITE, Color.BLACK);
+        Plane plane = new Plane(p, n, Color.WHITE, Color.BLACK, 10);
 
         assertTrue(DoubleComparisonUtil.approximatelyEqual(1.0, plane.getPoint().getX()));
         assertTrue(DoubleComparisonUtil.approximatelyEqual(-1.0, plane.getPoint().getZ()));

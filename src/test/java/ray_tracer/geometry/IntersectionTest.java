@@ -14,7 +14,7 @@ public class IntersectionTest {
     @Test
     public void constructor_and_getters() {
         Ray r = new Ray(new Point(1,2,3), new Vector(1,0,0));
-        Shape s = new Shape(Color.WHITE, Color.BLACK) {
+        Shape s = new Shape(Color.WHITE, Color.BLACK, 10) {
             @Override
             public Optional<Intersection> intersect(ray_tracer.raytracer.Ray ray) {
                 return Optional.empty();

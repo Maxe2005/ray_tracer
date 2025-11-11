@@ -28,7 +28,7 @@ public class SceneTest {
         assertEquals(0.1, s.getAmbient().getR(), 1e-12);
 
         // add a shape and a light and check lists
-        s.addShape(new Sphere(0,0,0, 1.0, Color.BLACK, Color.WHITE));
+        s.addShape(new Sphere(0,0,0, 1.0, Color.BLACK, Color.WHITE, 10));
         assertFalse(s.getShapes().isEmpty());
 
         s.addLight(new PointLight(new Point(0,0,0), new Color(0.2,0.2,0.2)));

@@ -12,8 +12,8 @@ public class Plane extends Shape {
     private final Point point;
     private final Vector normal;
 
-    public Plane(Point point, Vector normal, Color diffuse, Color specular) {
-        super(diffuse, specular);
+    public Plane(Point point, Vector normal, Color diffuse, Color specular, int shininess) {
+        super(diffuse, specular, shininess);
         this.point = point;
         this.normal = normal;
     }

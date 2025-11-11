@@ -18,7 +18,7 @@ public class SceneIntersectTest {
     @Test
     public void scene_returns_closest_shape_intersection() {
         Scene scene = new Scene();
-        Sphere s = new Sphere(0.0, 0.0, 5.0, 1.0, new Color(), new Color());
+        Sphere s = new Sphere(0.0, 0.0, 5.0, 1.0, new Color(), new Color(), 10);
         scene.addShape(s);
 
         Ray r = new Ray(new Point(0.0, 0.0, 0.0), new Vector(0.0, 0.0, 1.0));

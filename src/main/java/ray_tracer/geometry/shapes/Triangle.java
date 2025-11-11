@@ -13,8 +13,8 @@ public class Triangle extends Shape {
     private final Point v1;
     private final Point v2;
 
-    public Triangle(Point v0, Point v1, Point v2, Color diffuse, Color specular) {
-        super(diffuse, specular);
+    public Triangle(Point v0, Point v1, Point v2, Color diffuse, Color specular, int shininess) {
+        super(diffuse, specular, shininess);
         this.v0 = v0;
         this.v1 = v1;
         this.v2 = v2;
