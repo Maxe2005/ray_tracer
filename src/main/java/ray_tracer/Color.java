@@ -6,7 +6,8 @@ public class Color extends AbstractVec3 {
     private final double b;
 
     public Color(double r, double g, double b) {
-        super(r > 1.0 ? 1.0 : (r < 0.0 ? 0.0 : r),
+        // si la couleur est en dehors de [0,1] on la ramène dans cet interval
+                super(r > 1.0 ? 1.0 : (r < 0.0 ? 0.0 : r),
                 g > 1.0 ? 1.0 : (g < 0.0 ? 0.0 : g),
                 b > 1.0 ? 1.0 : (b < 0.0 ? 0.0 : b));
         this.r = this.getX();
