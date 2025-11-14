@@ -16,13 +16,27 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
+JALON_ENV_FILE="$SCRIPT_DIR/jalon.env"
 
 TESTS_AUTO_DIR="$SCRIPT_DIR/tests_auto"
 mkdir -p "$TESTS_AUTO_DIR"
 
+LOADED_ENV_FILES=()
 if [ -f "$ENV_FILE" ]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"
+  LOADED_ENV_FILES+=("$ENV_FILE")
+fi
+
+# charger un fichier spécifique aux jalons si présent (peut redéfinir des variables)
+if [ -f "$JALON_ENV_FILE" ]; then
+  # shellcheck disable=SC1090
+  source "$JALON_ENV_FILE"
+  LOADED_ENV_FILES+=("$JALON_ENV_FILE")
+fi
+
+if [ ${#LOADED_ENV_FILES[@]} -eq 0 ]; then
+  warn "Aucun fichier d'environnement chargé (ni $ENV_FILE ni $JALON_ENV_FILE)."
 fi
 
 # Couleurs pour sortie terminal
@@ -105,7 +119,8 @@ cmd "Main class   : $MAIN_CLASS"
 echo
 
 # emplacement possible du comparateur d'images (modifiable si besoin)
-IMGCOMPARE_JAR="$SCRIPT_DIR/../imgcompare/imgcompare.jar"
+# Peut être défini dans .env comme : IMGCOMPARE_JAR=/chemin/vers/imgcompare.jar
+IMGCOMPARE_JAR="${IMGCOMPARE_JAR:-$SCRIPT_DIR/../imgcompare/imgcompare.jar}"
 
 # dossier pour stocker les sorties de comparaison
 OUTPUT_DIR="$SCRIPT_DIR/outputs"
