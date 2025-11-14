@@ -20,6 +20,14 @@ public class Plane extends Shape {
 
     @Override
     public Optional<Intersection> intersect(Ray ray) {
+        double denom = normal.scalarProduct(ray.getDirection());
+        if (Math.abs(denom) > EPSILON) {
+            Vector p0l0 = point.subtraction(ray.getOrigin());
+            double t = p0l0.scalarProduct(normal) / denom;
+            if (t >= EPSILON) {
+                return Optional.of(new Intersection(ray, t, this));
+            }
+        }
         return Optional.empty();
     }
 

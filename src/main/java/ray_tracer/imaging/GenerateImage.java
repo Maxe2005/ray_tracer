@@ -32,7 +32,7 @@ public class GenerateImage {
                 ray.setDirection(basis, i, j, rayTracer.getPixelWidth(), rayTracer.getPixelHeight(), scene.getWidth(), scene.getHeight());
                 Optional<Intersection> intersection = scene.intersect(ray);
                 if (intersection.isPresent()) {
-                    image.setPixelColor(i, j, rayTracer.getPixelColor(intersection.get()));
+                    image.setPixelColor(i, j, scene.getTotalColorAt(intersection.get()));
                 }
             }
         }

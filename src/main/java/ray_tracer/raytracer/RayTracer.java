@@ -1,8 +1,6 @@
 package ray_tracer.raytracer;
 
 import ray_tracer.parsing.Scene;
-import ray_tracer.geometry.Intersection;
-import ray_tracer.imaging.Color;
 
 public class RayTracer {
     private double pixelHeight;
@@ -18,10 +16,6 @@ public class RayTracer {
         double fovRadians = scene.getCamera().getRadiansFov();
         pixelHeight = Math.tan(fovRadians / 2.0);
         pixelWidth = pixelHeight * aspectRatio;
-    }
-
-    public Color getPixelColor(Intersection intersection) {
-        return scene.getTotalColorAt(intersection);
     }
 
     public double getPixelHeight() {
