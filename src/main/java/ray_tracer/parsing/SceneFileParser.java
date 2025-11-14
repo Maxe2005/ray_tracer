@@ -142,6 +142,9 @@ public class SceneFileParser {
         if (maxVerts > 0 && vertexList.size() < maxVerts) {
             addWarning("Le nombre de sommets définis est inférieur au maximum spécifié par maxverts.", 0, "Vous avez défini " + vertexList.size() + " sommets, mais le maxverts est de " + maxVerts + ".");
         }
+        if (scene.getAmbient().equals(Color.BLACK)) {
+            addWarning("Aucune couleur ambiante spécifiée dans le fichier de scène.", 0, "La couleur ambiante par défaut (noir) sera utilisée.");
+        }
     }
 
     private static void addWarning(String message, int lineNumber, String explanation) {
@@ -183,7 +186,7 @@ public class SceneFileParser {
         // Ex: output filename
         if (params.length == 1) {
             String filename = params[0];
-            if (scene.getOutputFile() != null) {
+            if (!scene.getOutputFile().equals(Scene.DEFAULT_OUTPUT)) {
                 addWarning("Le fichier de sortie a déjà été défini précédemment.", lineNumber, "Vous redéfinissez le fichier de sortie. La dernière valeur sera utilisée.");
             }
             scene.setOutputFile(filename);
