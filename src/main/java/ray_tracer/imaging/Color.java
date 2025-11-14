@@ -3,9 +3,6 @@ package ray_tracer.imaging;
 import ray_tracer.geometry.AbstractVec3;
 
 public class Color extends AbstractVec3 {
-    private final double r;
-    private final double g;
-    private final double b;
     public static final Color BLACK = new Color(0.0, 0.0, 0.0);
     public static final Color WHITE = new Color(1.0, 1.0, 1.0);
 
@@ -13,9 +10,6 @@ public class Color extends AbstractVec3 {
         super(r > 1.0 ? 1.0 : (r < 0.0 ? 0.0 : r),
                 g > 1.0 ? 1.0 : (g < 0.0 ? 0.0 : g),
                 b > 1.0 ? 1.0 : (b < 0.0 ? 0.0 : b));
-        this.r = this.getX();
-        this.g = this.getY();
-        this.b = this.getZ();
     }
 
     public Color() {
@@ -25,24 +19,24 @@ public class Color extends AbstractVec3 {
     @Override
     public Color addition(AbstractVec3 other) {
         Color o = (Color) other;
-        return new Color(this.getR() + o.getR(), this.getG() + o.getG(), this.getB() + o.getB());
+        return new Color(this.getX() + o.getX(), this.getY() + o.getY(), this.getZ() + o.getZ());
     }
 
     @Override
     public Color scalarMultiplication(double scalar) {
-        return new Color(this.getR() * scalar, this.getG() * scalar, this.getB() * scalar);
+        return new Color(this.getX() * scalar, this.getY() * scalar, this.getZ() * scalar);
     }
 
     @Override
     public Color schurProduct(AbstractVec3 other) {
         Color o = (Color) other;
-        return new Color(this.getR() * o.getR(), this.getG() * o.getG(), this.getB() * o.getB());
+        return new Color(this.getX() * o.getX(), this.getY() * o.getY(), this.getZ() * o.getZ());
     }
 
     public int toRGB() {
-        int red = (int) Math.round(r * 255);
-        int green = (int) Math.round(g * 255);
-        int blue = (int) Math.round(b * 255);
+        int red = (int) Math.round(this.getX() * 255);
+        int green = (int) Math.round(this.getY() * 255);
+        int blue = (int) Math.round(this.getZ() * 255);
         return (((red & 0xff) << 16)
                 + ((green & 0xff) << 8)
                 + (blue & 0xff));
@@ -61,7 +55,7 @@ public class Color extends AbstractVec3 {
     }
 
     public String toString() {
-        return "Color(r:" + r + ", g:" + g + ", b:" + b + ")";
+        return "Color(r:" + this.getR() + ", g:" + this.getG() + ", b:" + this.getB() + ")";
     }
 
 }
