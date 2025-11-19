@@ -1,6 +1,7 @@
 package ray_tracer;
 
 public class DoubleComparisonUtil {
+    // Tolérance utilisée pour décider si deux doubles sont égaux
     private static final double EPSILON = 1e-9;
 
     public static boolean approximatelyEqual(double num1, double num2) {
