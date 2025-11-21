@@ -7,15 +7,18 @@ import java.util.Optional;
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.shapes.Shape;
 import ray_tracer.geometry.Intersection;
+import ray_tracer.geometry.Vector;
 import ray_tracer.raytracer.Ray;
 
 public class Scene {
     public static final String DEFAULT_OUTPUT = "output.png";
+    public static final int DEFAULT_MAX_RECURSION_DEPTH = 1;
     private int width;
     private int height;
     private Camera camera;
     private String output = DEFAULT_OUTPUT;
     private Color ambient = new Color();
+    private int maxRecursionDepth = DEFAULT_MAX_RECURSION_DEPTH;
     private List<AbstractLight> lights = new ArrayList<>();
     private List<Shape> shapes = new ArrayList<>();
 
@@ -59,16 +62,38 @@ public class Scene {
         }
     }
 
-    public Color getTotalColorAt(Intersection intersection){
+    public Color getTotalColorAt(Intersection intersection, Vector eyeDirection){
         Color totalLight = ambient;
         for (AbstractLight light : lights) {
             Ray shadowRay = new Ray(intersection.getPoint(), light.getDirectionFrom(intersection.getPoint()));
             Optional<Intersection> ombreIntersection = intersect(shadowRay);
-            if (!ombreIntersection.isPresent()){//} || ombreIntersection.get().getDistance() < 1e-9) {
-                totalLight = totalLight.addition(light.getColorAt(intersection, camera.getDirection()));
+            if (!ombreIntersection.isPresent()){
+                totalLight = totalLight.addition(light.getColorAt(intersection, intersection.getRay().getDirection().scalarMultiplication(-1)));
             }
         }
         return totalLight;
+    }
+
+    public Color getRecursionColorAt(Intersection intersection, Vector eyeDirection, int recursionDepth) {
+        Color directColor = this.getTotalColorAt(intersection, eyeDirection);
+        if (recursionDepth <= 1 || intersection.getShape().getSpecular().equals(Color.BLACK)) {
+            return directColor;
+        }
+        Vector reflectDir = eyeDirection.addition(intersection.getNormal().scalarMultiplication(2 * intersection.getNormal().scalarProduct(eyeDirection.scalarMultiplication(-1))));
+        Ray reflectRay = new Ray(intersection.getPoint(), reflectDir);
+        Optional<Intersection> reflectIntersection = this.intersect(reflectRay);
+        if (!reflectIntersection.isPresent()) {
+            return directColor;
+        }
+        Color reflectedColor = this.getRecursionColorAt(reflectIntersection.get(), reflectDir, recursionDepth - 1);
+        return directColor.addition(reflectedColor.schurProduct(intersection.getShape().getSpecular()));
+    }
+
+    public Color getTotalRecursionColorAt(Intersection intersection){
+        if (!camera.getDirection().equals(intersection.getRay().getDirection())) {
+            System.out.println("Is the same ? ");
+        }
+        return getRecursionColorAt(intersection, camera.getDirection(), maxRecursionDepth);
     }
 
     public void addSize(int width, int height) throws NumberFormatException {
@@ -99,6 +124,13 @@ public class Scene {
         this.lights.add(light);
     }
 
+    public void addMaxRecursionDepth(int maxRecursionDepth) throws NumberFormatException {
+        // if (maxRecursionDepth <= 0){
+        //     throw new NumberFormatException("Max recursion depth must be a positive integer.");
+        // }
+        this.maxRecursionDepth = maxRecursionDepth;
+    }
+
 
     public int getWidth() {
         return width;
@@ -117,6 +149,10 @@ public class Scene {
 
     public Color getAmbient() {
         return ambient;
+    }
+
+    public int getMaxRecursionDepth() {
+        return maxRecursionDepth;
     }
 
     public List<Shape> getShapes() {

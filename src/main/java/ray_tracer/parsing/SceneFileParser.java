@@ -107,6 +107,9 @@ public class SceneFileParser {
             case "plane":
                 parsePlane(params, scene, lineNumber);
                 break;
+            case "maxdepth":
+                parseMaxdepth(params, scene, lineNumber);
+                break;
             default:
                 addWarning("Mot-clé '" + keyword + "' inconnu", lineNumber, null);
         }
@@ -447,6 +450,23 @@ public class SceneFileParser {
             }
         } else {
             throw new ParserException("Paramètres de plan invalides: Il faut exactement six paramètres (pointX pointY pointZ normalX normalY normalZ).", lineNumber);
+        }
+    }
+
+    private static void parseMaxdepth(String[] params, Scene scene, int lineNumber) throws ParserException {
+        // Ex: maxdepth n
+        if (params.length == 1) {
+            try {
+                int maxDepth = Integer.parseInt(params[0]);
+                if (maxDepth <= 0) {
+                    throw new ParserException("Le nombre maximum de reflets doit être un entier positif.", lineNumber);
+                }
+                scene.addMaxRecursionDepth(maxDepth);
+            } catch (NumberFormatException e) {
+                throw new ParserException("Paramètre maxdepth invalide: " + e.getMessage(), lineNumber);
+            }
+        } else {
+            throw new ParserException("Paramètre maxdepth invalide: Il faut exactement un entier.", lineNumber);
         }
     }
 
