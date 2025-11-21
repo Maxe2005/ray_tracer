@@ -3,7 +3,8 @@ package ray_tracer.geometry.shapes;
 import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
 import ray_tracer.imaging.Color;
-
+//Un plan est défini par un point appartenant au plan et un vecteur normal (perpendiculaire au plan)
+ 
 public class Plane extends Shape {
     private final Point point;
     private final Vector normal;
