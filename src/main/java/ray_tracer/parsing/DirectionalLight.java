@@ -3,6 +3,11 @@ package ray_tracer.parsing;
 import ray_tracer.geometry.Vector;
 import ray_tracer.imaging.Color;
 
+/**
+ * Représente une lumière directionnelle.
+ * Elle possède uniquement une DIRECTION.
+ * Elle hérite de AbstractLight → donc elle possède déjà une couleur.
+ */
 public class DirectionalLight extends AbstractLight {
     private Vector direction;
 
