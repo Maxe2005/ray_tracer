@@ -10,7 +10,7 @@ public class DirectionalLight extends AbstractLight {
 
     public DirectionalLight(Vector direction, Color color) {
         super(color);
-        this.direction = direction;
+        this.direction = direction.normalize();
     }
 
     @Override
