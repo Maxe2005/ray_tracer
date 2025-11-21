@@ -15,7 +15,7 @@ public class PointLight extends AbstractLight {
 
     @Override
     public Color getColorAt(Intersection intersection) {
-        Vector direction = position.subtraction(intersection.getPoint());
+        Vector direction = position.subtraction(intersection.getPoint()).normalize();
         return this.getColor().scalarMultiplication(Math.max(intersection.getNormal().scalarProduct(direction), 0.0)).schurProduct(intersection.getShape().getDiffuse());
     }
 
