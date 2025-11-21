@@ -1,6 +1,10 @@
 package ray_tracer.imaging;
 
 import ray_tracer.geometry.AbstractVec3;
+/**
+ * Color hérite de AbstractVec3, donc elle fonctionne comme un vecteur 3D.
+ * x = r, y = g, z = b.
+ */
 
 public class Color extends AbstractVec3 {
     private final double r;
