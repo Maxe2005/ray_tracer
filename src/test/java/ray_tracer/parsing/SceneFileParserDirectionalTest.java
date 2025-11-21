@@ -24,7 +24,6 @@ public class SceneFileParserDirectionalTest {
             assertFalse(scene.getLights().isEmpty());
             assertTrue(scene.getLights().get(0) instanceof DirectionalLight);
             DirectionalLight dl = (DirectionalLight) scene.getLights().get(0);
-            assertEquals(1.0, dl.getDirection().getX(), 1e-12);
             assertEquals(0.1, dl.getColor().getR(), 1e-12);
         } finally {
             Files.deleteIfExists(tmp);

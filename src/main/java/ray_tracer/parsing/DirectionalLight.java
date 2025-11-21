@@ -10,7 +10,9 @@ public class DirectionalLight extends AbstractLight {
 
     public DirectionalLight(Vector direction, Color color) {
         super(color);
-        this.direction = direction;
+        // Store a normalized direction vector as provided by the scene (preserve orientation),
+        // but normalize to ensure consistent lighting computations.
+        this.direction = direction.normalize();
     }
 
     @Override

@@ -68,7 +68,8 @@ public class Scene {
             Ray shadowRay = new Ray(intersection.getPoint(), light.getDirectionFrom(intersection.getPoint()));
             Optional<Intersection> ombreIntersection = intersect(shadowRay);
             if (!ombreIntersection.isPresent()){
-                totalLight = totalLight.addition(light.getColorAt(intersection, intersection.getRay().getDirection().scalarMultiplication(-1)));
+                // Use the provided eyeDirection (vector from point -> camera)
+                totalLight = totalLight.addition(light.getColorAt(intersection, eyeDirection));
             }
         }
         return totalLight;
@@ -90,10 +91,9 @@ public class Scene {
     }
 
     public Color getTotalRecursionColorAt(Intersection intersection){
-        if (!camera.getDirection().equals(intersection.getRay().getDirection())) {
-            System.out.println("Is the same ? ");
-        }
-        return getRecursionColorAt(intersection, camera.getDirection(), maxRecursionDepth);
+        // Compute the eye/view direction for this intersection: vector from the point to the camera
+        Vector eyeDirection = intersection.getRay().getDirection().scalarMultiplication(-1);
+        return getRecursionColorAt(intersection, eyeDirection, maxRecursionDepth);
     }
 
     public void addSize(int width, int height) throws NumberFormatException {
