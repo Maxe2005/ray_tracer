@@ -2,8 +2,14 @@ package ray_tracer.geometry.shapes;
 
 import ray_tracer.geometry.Point;
 import ray_tracer.imaging.Color;
+/**
+  Dans un ray tracer, les triangles sont très importants car :
+  - toutes les formes complexes peuvent être découpées en triangles
+  - un triangle est la forme 3D la plus simple (3 sommets, une surface plate)
+ */
 
 public class Triangle extends Shape {
+    // Les trois sommets du triangle
     private final Point v0;
     private final Point v1;
     private final Point v2;
