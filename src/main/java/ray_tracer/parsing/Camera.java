@@ -1,4 +1,12 @@
 package ray_tracer.parsing;
+/**
+ Représente la caméra de la scène.
+ Elle contient :
+  - la position de l'oeil (lookFrom)
+  - le point visé (lookAt)
+  - le vecteur "haut" de la caméra (upDir)
+  - l'angle de vue (fov)
+ */
 
 public class Camera {
     private double lookFromX, lookFromY, lookFromZ;
