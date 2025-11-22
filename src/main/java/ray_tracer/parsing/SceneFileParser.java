@@ -1,12 +1,14 @@
 package ray_tracer.parsing;
-
+// Classes pour lire un fichier ligne par ligne
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+// Pour manipuler les chemins de fichiers
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+// Pour stocker des listes 
 import java.util.List;
 import java.util.ArrayList;
 
@@ -18,6 +20,7 @@ import ray_tracer.geometry.Vector;
 import ray_tracer.geometry.Point;
 
 public class SceneFileParser {
+     // Liste des avertissements rencontrés pendant le parsing
     static List<String> warnings = new ArrayList<>();
     static Color waitingDiffuse = null;
     static Color waitingSpecular = null;
@@ -27,7 +30,9 @@ public class SceneFileParser {
     static List<Point> vertexList = new ArrayList<>();
 
     public static Scene parse(String sceneDescriptionPath) throws ParserException {
+      // Convertion du chemin en objet Path lisible par Java
         Path path = Paths.get(sceneDescriptionPath);
+        // Ouvre automatiquement le fichier et garantit qu'il sera refermé
         try (InputStream stream = Files.newInputStream(path);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
 
@@ -37,7 +42,7 @@ public class SceneFileParser {
             int num_line = 0;
             while ((line = reader.readLine()) != null) {
                 num_line++;
-                parseLine(line, scene, num_line);
+                parseLine(line, scene, num_line); // Analyse la ligne
             }
 
             handleFinalsErrors(scene);
@@ -57,8 +62,9 @@ public class SceneFileParser {
         if (tokens.length == 0 || tokens[0].isEmpty() || tokens[0].equals("#")) {
             return; // Ignorer les lignes vides ou les commentaires
         }
-
+        // Le premier mot est le mot-clé 
         String keyword = tokens[0].toLowerCase();
+        // Le  reste : des paramètres
         String[] params = java.util.Arrays.copyOfRange(tokens, 1, tokens.length);
 
         switch (keyword) {
@@ -107,7 +113,8 @@ public class SceneFileParser {
                 addWarning("Mot-clé '" + keyword + "' inconnu", lineNumber, null);
         }
     }
-
+  //   Remet à zéro toutes les variables internes du parser (appelée AU DÉBUT du parsing d’un fichier.scene)
+     
     private static void initVariables() {
         warnings.clear();
         waitingDiffuse = null;
@@ -117,7 +124,12 @@ public class SceneFileParser {
         maxVerts = 0;
         vertexList.clear();
     }
-
+ /*   Cette méthode est appelée APRÈS que toutes les lignes ont été lues.
+       Son rôle :
+         vérifier que les éléments obligatoires sont présents
+         lancer une erreur si c’est grave
+         ajouter des warnings pour les oublis mineurs  */
+    
     private static void handleFinalsErrors(Scene scene) throws ParserException {
         if (!isSizeSet) {
             throw new ParserException("Aucune taille spécifiée dans le fichier de scène.");
