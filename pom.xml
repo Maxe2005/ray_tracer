@@ -17,11 +17,6 @@
         <javafx.platform>linux</javafx.platform>
     </properties>
 
-    <modules>
-        <module>core</module>
-        <module>viewer</module>
-    </modules>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
