@@ -80,8 +80,8 @@ public class Scene {
         if (recursionDepth <= 1 || intersection.getShape().getSpecular().equals(Color.BLACK)) {
             return directColor;
         }
-        Vector reflectDir = eyeDirection.addition(intersection.getNormal().scalarMultiplication(2 * intersection.getNormal().scalarProduct(eyeDirection.scalarMultiplication(-1))));
-        Ray reflectRay = new Ray(intersection.getPoint(), reflectDir);
+        Vector reflectDir = eyeDirection.addition(intersection.getNormal().scalarMultiplication(2 * intersection.getNormal().scalarProduct(eyeDirection.scalarMultiplication(-1)))).normalize();
+        Ray reflectRay = new Ray(intersection.getPoint(), reflectDir.scalarMultiplication(-1));
         Optional<Intersection> reflectIntersection = this.intersect(reflectRay);
         if (!reflectIntersection.isPresent()) {
             return directColor;
@@ -92,7 +92,7 @@ public class Scene {
 
     public Color getTotalRecursionColorAt(Intersection intersection){
         // Compute the eye/view direction for this intersection: vector from the point to the camera
-        Vector eyeDirection = intersection.getRay().getDirection().scalarMultiplication(-1);
+        Vector eyeDirection = intersection.getRay().getDirection().scalarMultiplication(-1).normalize();
         return getRecursionColorAt(intersection, eyeDirection, maxRecursionDepth);
     }
 

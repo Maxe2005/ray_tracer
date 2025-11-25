@@ -15,7 +15,7 @@ public class Camera {
             double fov) {
         this.lookFrom = new Point(lookFromX, lookFromY, lookFromZ);
         this.lookAt = new Point(lookAtX, lookAtY, lookAtZ);
-        this.upDir = new Vector(upDirX, upDirY, upDirZ);
+        this.upDir = new Vector(upDirX, upDirY, upDirZ).normalize();
         this.fov = fov;
     }
 
