@@ -1,43 +1,35 @@
 package ray_tracer.imaging;
 
 import ray_tracer.parsing.Scene;
-import ray_tracer.raytracer.Ray;
-import ray_tracer.raytracer.RayTracer;
-import ray_tracer.geometry.Orthonormal;
-import ray_tracer.geometry.Intersection;
-
-import java.util.Optional;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import ray_tracer.renderer.DefaultRenderer;
+import ray_tracer.renderer.ImageUtils;
+import ray_tracer.renderer.RenderException;
+import ray_tracer.renderer.RenderOptions;
+import ray_tracer.renderer.Renderer;
 import javax.imageio.ImageIO;
 
 public class GenerateImage {
-    private static Orthonormal basis;
-    private static RayTracer rayTracer;
-    private static Image image;
+    // Backwards-compatible helpers retained below; rendering delegates to renderer.
 
     public static void render (Scene scene){
-        basis = Orthonormal.fromCamera(scene.getCamera());
-        rayTracer = new RayTracer(scene);
-        rayTracer.setPixelsDimensions();
-        image = new Image(scene.getWidth(), scene.getHeight());
-
-        for (int j = 0; j < scene.getHeight(); j++) {
-            for (int i = 0; i < scene.getWidth(); i++) {
-                Ray ray = new Ray(scene.getCamera().getLookFrom());
-                ray.setDirection(basis, i, j, rayTracer.getPixelWidth(), rayTracer.getPixelHeight(), scene.getWidth(), scene.getHeight());
-                Optional<Intersection> intersection = scene.intersect(ray);
-                if (intersection.isPresent()) {
-                    image.setPixelColor(i, j, scene.getTotalColorAt(intersection.get()));
-                }
+        Renderer renderer = new DefaultRenderer();
+        RenderOptions opts = new RenderOptions();
+        try {
+            BufferedImage img = renderer.renderSync(scene, scene.getCamera(), scene.getWidth(), scene.getHeight(), opts);
+            // write directly to file
+            Path outPath = Paths.get(scene.getOutputFile());
+            try (OutputStream stream = Files.newOutputStream(outPath)) {
+                ImageUtils.writePNG(img, stream);
             }
+        } catch (RenderException | IOException e) {
+            e.printStackTrace();
         }
-        image.flipUpDown();
-        writeImage(image, scene.getOutputFile());
     }
 
     private static BufferedImage toBufferedImage(Image image) {

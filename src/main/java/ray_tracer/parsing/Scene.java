@@ -18,6 +18,8 @@ public class Scene {
     private Color ambient = new Color();
     private List<AbstractLight> lights = new ArrayList<>();
     private List<Shape> shapes = new ArrayList<>();
+    // acceleration structure / dirty flag
+    private boolean dirty = true;
 
     public boolean areLightsCorrect() {
         double totalRed = 0;
@@ -143,5 +145,39 @@ public class Scene {
             sb.append("\t\t").append(shape).append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Build or rebuild acceleration structures (BVH, etc.).
+     * This is a no-op placeholder for now; implementations may build a real BVH.
+     */
+    public synchronized void buildAcceleration() {
+        // Placeholder: mark as clean after "building" acceleration
+        this.dirty = false;
+    }
+
+    public synchronized boolean isDirty() {
+        return dirty;
+    }
+
+    public synchronized void setDirty(boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    /**
+     * Create a shallow copy of the scene suitable for use by a renderer. The shapes and
+     * lights are shared (assumed read-mostly); the camera and primitives are copied where useful.
+     */
+    public Scene copyForRender() {
+        Scene s = new Scene();
+        s.width = this.width;
+        s.height = this.height;
+        s.output = this.output;
+        s.ambient = this.ambient;
+        s.lights = new ArrayList<>(this.lights);
+        s.shapes = new ArrayList<>(this.shapes);
+        s.camera = (this.camera != null) ? this.camera.copy() : null;
+        s.dirty = this.dirty;
+        return s;
     }
 }
