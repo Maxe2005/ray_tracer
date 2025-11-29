@@ -9,7 +9,7 @@ import ray_tracer.geometry.Vector;
 import java.util.Optional;
 
 public abstract class Shape {
-    protected static final double EPSILON = 1e-6;
+    protected static final double EPSILON = 1e-9;
     protected final Color diffuse;
     protected final Color specular;
     protected final int shininess;
