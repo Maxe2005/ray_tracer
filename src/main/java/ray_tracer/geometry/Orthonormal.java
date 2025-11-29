@@ -14,7 +14,7 @@ public class Orthonormal {
     }
 
     public static Orthonormal fromCamera (Camera camera) {
-        Vector w = camera.getDirection().normalize();
+       Vector w = camera.getDirection().normalize();
         Vector up = camera.getUpDir().normalize();
         Vector u = up.vectorialProduct(w).normalize();
         Vector v = w.vectorialProduct(u).normalize();

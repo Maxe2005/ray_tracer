@@ -16,7 +16,7 @@ public class RayTest {
         Vector v = new Vector(1,0,0);
         Ray r = new Ray(p, v);
         assertEquals(p, r.getOrigin());
-        assertEquals(v, r.getDirection());
+        assertTrue(v.normalize().equals(r.getDirection()));
         assertTrue(r.isRayValid());
     }
 
