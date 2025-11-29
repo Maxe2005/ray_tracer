@@ -22,6 +22,10 @@ public class Triangle extends Shape {
 
     @Override
     public Optional<Intersection> intersect(Ray ray) {
+        return intersect_v1(ray);
+    }
+    
+    public Optional<Intersection> intersect_v1(Ray ray) {
         Vector edge1 = b.subtraction(a);
         Vector edge2 = c.subtraction(a);
         Vector p = ray.getDirection().vectorialProduct(edge2);
@@ -46,6 +50,80 @@ public class Triangle extends Shape {
         }
         return Optional.of(new Intersection(ray, t, this));
     }
+
+    public Optional<Intersection> intersect_v2(Ray ray) {
+
+        Vector rayDir = ray.getDirection();
+        Point  rayOrigin = ray.getOrigin();
+
+        // Vecteurs du triangle
+        Vector edge1 = b.subtraction(a);
+        Vector edge2 = c.subtraction(a);
+
+        // Calcul de la normale du triangle
+        Vector triangleNormal = edge1.vectorialProduct(edge2);
+        double normalLength = triangleNormal.norm();
+
+        // Triangle dégénéré
+        if (normalLength < EPSILON) {
+            return Optional.empty();
+        }
+
+        // // Normaliser pour l'intersection
+        // Vector n = triangleNormal.normalize();
+
+        // p = d × edge2
+        Vector p = rayDir.vectorialProduct(edge2);
+
+        // det = edge1 · p
+        double det = edge1.scalarProduct(p);
+
+        // Si det ≈ 0 → rayon parallèle au plan du triangle
+        if (Math.abs(det) < EPSILON) {
+            return Optional.empty();
+        }
+
+        double invDet = 1.0 / det;
+
+        // tVec = origin - a
+        Vector tVec = rayOrigin.subtraction(a);
+
+        // β = (tVec · p) / det
+        double beta = tVec.scalarProduct(p) * invDet;
+
+        if (beta < 0.0) {
+            return Optional.empty();
+        }
+
+        // q = tVec × edge1
+        Vector q = tVec.vectorialProduct(edge1);
+
+        // γ = (d · q) / det
+        double gamma = rayDir.scalarProduct(q) * invDet;
+
+        if (gamma < 0.0 || beta + gamma > 1.0) {
+            return Optional.empty();
+        }
+
+        // t = (edge2 · q) / det
+        double tValue = edge2.scalarProduct(q) * invDet;
+
+        if (tValue < EPSILON) {
+            return Optional.empty();
+        }
+
+        // // Point d'intersection
+        // Point hitPoint = rayOrigin.addition(rayDir.scalarMultiplication(tValue));
+
+        // // Correction IMPORTANTE : inversion correcte de la normale
+        // Vector intersectionNormal = n;
+        // if (det < 0) {
+        //     intersectionNormal = n.scalarMultiplication(-1);
+        // }
+        
+        return Optional.of(new Intersection(ray, tValue, this));
+    }
+
 
     public Point getV0() {
         return a;
