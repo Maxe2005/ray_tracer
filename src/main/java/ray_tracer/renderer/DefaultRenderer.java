@@ -132,7 +132,7 @@ public class DefaultRenderer implements Renderer {
                             ray.setDirection(basis, px, py, rt.getPixelWidth(), rt.getPixelHeight(), width, height);
                             java.util.Optional<Intersection> intersection = scene.intersect(ray);
                             if (intersection.isPresent()) {
-                                Color c = scene.getTotalColorAt(intersection.get());
+                                Color c = scene.getTotalRecursionColorAt(intersection.get());
                                 synchronized (img) {
                                     img.setRGB(px, py, c.toRGB());
                                 }
