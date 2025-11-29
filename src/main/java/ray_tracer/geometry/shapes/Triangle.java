@@ -32,7 +32,7 @@ public class Triangle extends Shape {
         double invDet = 1.0 / det;
         Vector tv = ray.getOrigin().subtraction(a);
         double beta = invDet * tv.scalarProduct(p);
-        if (beta < 0) || beta > 1) {
+        if (beta < 0 || beta > 1) {
             return Optional.empty(); // Pas d'intersection
         }
         Vector q = tv.vectorialProduct(edge1);
