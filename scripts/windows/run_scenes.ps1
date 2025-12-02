@@ -9,6 +9,9 @@ function Write-Warn($m){ Write-Host $m -ForegroundColor Yellow }
 function Write-Err($m){ Write-Host $m -ForegroundColor Red }
 
 $ScriptDir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+# remonter de 2 niveaux (de `scripts\windows` -> `scripts` -> projet root)
+$ScriptDir = Split-Path -Path $ScriptDir -Parent
+$ScriptDir = Split-Path -Path $ScriptDir -Parent
 $EnvFile = Join-Path $ScriptDir '.env'
 $JalonEnvFile = Join-Path $ScriptDir 'jalon.env'
 
@@ -25,9 +28,11 @@ function Parse-EnvFile($path){
         if ($parts.Count -lt 2) { return }
         $key = $parts[0].Trim()
         $value = $parts[1].Trim()
-        if ($value.StartsWith('"') -and $value.EndsWith('"')) { $value = $value.Substring(1,$value.Length-2) }
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1,$value.Length-2)
+        }
         Set-Variable -Name $key -Value $value -Scope Script -Force
-        Set-Item -Path "Env:$key" -Value $value
+        Set-Item -Path "Env:$key" -Value $value -Force
     }
     $LoadedEnvFiles += $path
 }
@@ -124,7 +129,9 @@ $OutputDir = Join-Path $ScriptDir 'outputs'
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 # Rassembler fichiers .scene et .test (top level)
-$files = Get-ChildItem -Path $ScenesDir -File -Include *.scene,*.test -ErrorAction SilentlyContinue | Sort-Object Name
+# Note: -Include fonctionne correctement quand Path contient un wildcard or when -Recurse is used.
+# On ajoute '\*' à Path pour limiter à l'étage courant tout en supportant -Include.
+$files = Get-ChildItem -Path (Join-Path $ScenesDir '*') -File -Include *.scene,*.test -ErrorAction SilentlyContinue | Sort-Object Name
 if ($files.Count -eq 0){ Write-Err "Aucun fichier .scene ou .test trouvé dans $ScenesDir"; exit 4 }
 
 Write-Info "Fichiers trouvés :"

@@ -6,15 +6,43 @@ Usage:
 #>
 [CmdletBinding()]
 param(
-    [string]$Scene = "$PSScriptRoot\src\main\resources\scenes\final.scene"
+    [string]$Scene
 )
 
+# Si aucun `Scene` fourni, on le construira après avoir calculé `ScriptDir`
 $ErrorActionPreference = 'Stop'
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+# remonter de 2 niveaux (de `scripts\windows` -> `scripts` -> projet root)
+$ScriptDir = Split-Path -Path $ScriptDir -Parent
+$ScriptDir = Split-Path -Path $ScriptDir -Parent
 $EnvFile = Join-Path $ScriptDir '.env'
 $JalonEnv = Join-Path $ScriptDir 'jalon.env'
-if (Test-Path $EnvFile) { . $EnvFile }
-if (Test-Path $JalonEnv) { . $JalonEnv }
+
+# Charger les fichiers .env sans les dot-sourcer (évite d'exécuter/ouvrir le fichier)
+$LoadedEnvFiles = @()
+function Parse-EnvFile($path){
+    if (-not (Test-Path $path)) { return }
+    Get-Content $path | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -eq '' -or $line.StartsWith('#')) { return }
+        $parts = $line -split '=',2
+        if ($parts.Count -lt 2) { return }
+        $key = $parts[0].Trim()
+        $value = $parts[1].Trim()
+        if ($value.StartsWith('"') -and $value.EndsWith('"')) { $value = $value.Substring(1,$value.Length-2) }
+        Set-Variable -Name $key -Value $value -Scope Script -Force
+        Set-Item -Path "Env:$key" -Value $value -Force
+    }
+    $LoadedEnvFiles += $path
+}
+
+Parse-EnvFile $EnvFile
+Parse-EnvFile $JalonEnv
+
+# si non fourni en paramètre, construire le chemin de la scène à partir de la racine projet
+if (-not $Scene -or $Scene.Trim() -eq '') {
+    $Scene = Join-Path $ScriptDir 'src\main\resources\scenes\final.scene'
+}
 
 if (-not (Test-Path $Scene)) {
     Write-Error "Fichier scène introuvable : $Scene"
