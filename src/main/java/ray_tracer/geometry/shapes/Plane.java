@@ -7,7 +7,8 @@ import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
-
+//Un plan est défini par un point appartenant au plan et un vecteur normal (perpendiculaire au plan)
+ 
 public class Plane extends Shape {
     private final Point point;
     private final Vector normal;

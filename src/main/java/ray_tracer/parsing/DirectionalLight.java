@@ -5,6 +5,11 @@ import ray_tracer.geometry.Point;
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.Intersection;
 
+/**
+ * Représente une lumière directionnelle.
+ * Elle possède uniquement une DIRECTION.
+ * Elle hérite de AbstractLight → donc elle possède déjà une couleur.
+ */
 public class DirectionalLight extends AbstractLight {
     private Vector direction;
 
