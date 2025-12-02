@@ -7,11 +7,13 @@ public class Color extends AbstractVec3 {
     public static final Color WHITE = new Color(1.0, 1.0, 1.0);
 
     public Color(double r, double g, double b) {
+        // Clamp : force chaque composante r, g, b à rester dans l'intervalle [0,1]
         super(r > 1.0 ? 1.0 : (r < 0.0 ? 0.0 : r),
                 g > 1.0 ? 1.0 : (g < 0.0 ? 0.0 : g),
                 b > 1.0 ? 1.0 : (b < 0.0 ? 0.0 : b));
     }
 
+    // Constructeur par défaut : couleur noire (0,0,0).
     public Color() {
         this(0.0, 0.0, 0.0);
     }

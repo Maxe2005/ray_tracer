@@ -44,7 +44,7 @@ public class Vector extends AbstractVec3 {
     public double norm() {
         return Math.sqrt(this.getX() * this.getX() + this.getY() * this.getY() + this.getZ() * this.getZ());
     }
-
+// Normalise le vecteur : conserve sa direction mais ramène sa longueur à 1 (Impossible pour le vecteur nul car cela nécessiterait une division par zéro)
     @Override
     public Vector normalize() throws ArithmeticException {
         double norm = this.norm();
