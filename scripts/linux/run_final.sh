@@ -6,9 +6,9 @@ set -euo pipefail
 #   ./run_final.sh                # lance src/main/resources/scenes/final.scene
 #   ./run_final.sh path/to/scene  # lance le fichier scene donné
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-JALON_ENV_FILE="$SCRIPT_DIR/jalon.env"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" && pwd)"
+ENV_FILE="$ROOT_DIR/.env"
+JALON_ENV_FILE="$ROOT_DIR/jalon.env"
 
 # charger .env et jalon.env si présents (permet d'utiliser MAIN_CLASS ou autres variables)
 if [ -f "$ENV_FILE" ]; then
@@ -21,7 +21,7 @@ if [ -f "$JALON_ENV_FILE" ]; then
 fi
 
 SCENE_ARG="${1:-}"
-DEFAULT_SCENE="$SCRIPT_DIR/src/main/resources/scenes/final.scene"
+DEFAULT_SCENE="$ROOT_DIR/src/main/resources/scenes/final.scene"
 SCENE_PATH="${SCENE_ARG:-$DEFAULT_SCENE}"
 
 MAIN_CLASS="${MAIN_CLASS:-ray_tracer.Main}"
@@ -34,20 +34,20 @@ fi
 # détecter JAR
 JAR_PATH=""
 shopt -s nullglob
-for j in "$SCRIPT_DIR"/target/ray_tracer-*.jar; do
+for j in "$ROOT_DIR"/target/ray_tracer-*.jar; do
   JAR_PATH="$j"
   break
 done
 shopt -u nullglob
 
 if [ -z "$JAR_PATH" ]; then
-  echo "Aucun JAR trouvé dans $SCRIPT_DIR/target — lancement de 'mvn package'..."
+  echo "Aucun JAR trouvé dans $ROOT_DIR/target — lancement de 'mvn package'..."
   if command -v mvn >/dev/null 2>&1; then
-    pushd "$SCRIPT_DIR" >/dev/null
+    pushd "$ROOT_DIR" >/dev/null
     mvn -q package || { echo "Erreur: mvn package a échoué." >&2; popd >/dev/null; exit 1; }
     popd >/dev/null
     shopt -s nullglob
-    for j in "$SCRIPT_DIR"/target/ray_tracer-*.jar; do
+    for j in "$ROOT_DIR"/target/ray_tracer-*.jar; do
       JAR_PATH="$j"
       break
     done

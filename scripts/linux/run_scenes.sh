@@ -14,11 +14,12 @@ set -euo pipefail
 #     java -cp <jar> <MAIN_CLASS> <fichier>
 # - MAIN_CLASS peut être redéfini dans .env (par défaut ray_tracer.Main)
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-JALON_ENV_FILE="$SCRIPT_DIR/jalon.env"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" && pwd)"
+echo "ROOT_DIR = $ROOT_DIR"
+ENV_FILE="$ROOT_DIR/.env"
+JALON_ENV_FILE="$ROOT_DIR/jalon.env"
 
-TESTS_AUTO_DIR="$SCRIPT_DIR/tests_auto"
+TESTS_AUTO_DIR="$ROOT_DIR/tests_auto"
 mkdir -p "$TESTS_AUTO_DIR"
 
 LOADED_ENV_FILES=()
@@ -66,7 +67,7 @@ if [[ "$jalon" =~ ^[0-9]+$ ]]; then
   jalon="jalon$jalon"
 fi
 
-SCENES_DIR="$SCRIPT_DIR/src/main/resources/scenes/$jalon"
+SCENES_DIR="$ROOT_DIR/src/main/resources/scenes/$jalon"
 if [ ! -d "$SCENES_DIR" ]; then
   err "Erreur: répertoire de scènes introuvable : $SCENES_DIR"
   exit 2
@@ -75,15 +76,15 @@ fi
 # détecter le JAR (si plusieurs, prend le premier trié)
 JAR_PATH=""
 shopt -s nullglob
-for j in "$SCRIPT_DIR"/target/ray_tracer-*.jar; do
+for j in "$ROOT_DIR"/target/ray_tracer-*.jar; do
   JAR_PATH="$j"
   break
 done
 shopt -u nullglob
 
 # Build Maven before running tests (cache la sortie dans .mvn_build.log)
-info "Lancement de la build Maven (mvn package) dans $SCRIPT_DIR ..."
-pushd "$SCRIPT_DIR" >/dev/null
+info "Lancement de la build Maven (mvn package) dans $ROOT_DIR ..."
+pushd "$ROOT_DIR" >/dev/null
 MVN_LOG_FILE="$TESTS_AUTO_DIR/.mvn_build.log"
 rm -f "$MVN_LOG_FILE"
 if command -v mvn >/dev/null 2>&1; then
@@ -105,7 +106,7 @@ fi
 popd >/dev/null
 
 if [ -z "$JAR_PATH" ]; then
-  err "Aucun JAR trouvé dans $SCRIPT_DIR/target (pattern: ray_tracer-*.jar)."
+  err "Aucun JAR trouvé dans $ROOT_DIR/target (pattern: ray_tracer-*.jar)."
   err "Construisez d'abord le projet : mvn package"
   exit 3
 fi
@@ -120,10 +121,10 @@ echo
 
 # emplacement possible du comparateur d'images (modifiable si besoin)
 # Peut être défini dans .env comme : IMGCOMPARE_JAR=/chemin/vers/imgcompare.jar
-IMGCOMPARE_JAR="${IMGCOMPARE_JAR:-$SCRIPT_DIR/../imgcompare/imgcompare.jar}"
+IMGCOMPARE_JAR="${IMGCOMPARE_JAR:-$ROOT_DIR/../imgcompare/imgcompare.jar}"
 
 # dossier pour stocker les sorties de comparaison
-OUTPUT_DIR="$SCRIPT_DIR/outputs"
+OUTPUT_DIR="$ROOT_DIR/outputs"
 mkdir -p "$OUTPUT_DIR"
 
 # Rassembler la liste des fichiers .scene et .test
@@ -165,7 +166,7 @@ for f in "${files[@]}"; do
   if [[ "$fname_lower" == *.test ]]; then
     base="$(basename "$f" .test)"
     # fichier produit attendu (dans le répertoire du projet)
-    produced="$SCRIPT_DIR/$base.png"
+    produced="$ROOT_DIR/$base.png"
     # image attendue dans le dossier scenes
     expected="$SCENES_DIR/$base.png"
 
