@@ -54,6 +54,7 @@ public class Main {
         }
 
         // Delegate rendering; if threadCount <= 0 uses renderer defaults
-        GenerateImage.render(scene, threadCount);
+        // GenerateImage.render(scene, threadCount);
+        GenerateImage.renderSync(scene);
     }
 }

@@ -15,7 +15,6 @@ import ray_tracer.renderer.Renderer;
 import ray_tracer.renderer.RenderTask;
 import ray_tracer.renderer.ProgressListener;
 import ray_tracer.renderer.RenderUpdate;
-import javax.imageio.ImageIO;
 
 public class GenerateImage {
     // Backwards-compatible helpers retained below; rendering delegates to renderer.
@@ -55,6 +54,8 @@ public class GenerateImage {
                 throw new RenderException("Render failed", e);
             }
 
+            img = flipUpDown(img);
+
             // write directly to file
             Path outPath = Paths.get(scene.getOutputFile());
             try (OutputStream stream = Files.newOutputStream(outPath)) {
@@ -65,23 +66,35 @@ public class GenerateImage {
         }
     }
 
-    private static BufferedImage toBufferedImage(Image image) {
-        BufferedImage buffer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                Color color = image.getPixelColor(x, y);
-                buffer.setRGB(x, y, color.toRGB());
-            }
-        }
-        return buffer;
-    }
+    public static void renderSync(Scene scene) {
+        Renderer renderer = new DefaultRenderer();
+        RenderOptions opts = new RenderOptions();
 
-    private static void writeImage(Image image, String name) {
-        Path outPath = Paths.get(name);
-        try (OutputStream stream = Files.newOutputStream(outPath)) {
-            ImageIO.write(toBufferedImage(image), "png", stream);
-        } catch (IOException e) {
+        try {
+            // Start async render so we can listen to progress
+            BufferedImage img = renderer.renderSync(scene, scene.getCamera(), scene.getWidth(), scene.getHeight(), opts);
+
+            img = flipUpDown(img);
+
+            // write directly to file
+            Path outPath = Paths.get(scene.getOutputFile());
+            try (OutputStream stream = Files.newOutputStream(outPath)) {
+                ImageUtils.writePNG(img, stream);
+            }
+        } catch (RenderException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static BufferedImage flipUpDown(BufferedImage img) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        BufferedImage flipped = new BufferedImage(width, height, img.getType());
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                flipped.setRGB(x, height - y - 1, img.getRGB(x, y));
+            }
+        }
+        return flipped;
     }
 }
