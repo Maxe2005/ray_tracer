@@ -1,6 +1,6 @@
 #Stanford Dragon
 
-size 640 480
+size 50 50
 camera 10 15 10 0 5 -1 0 1 0 45
 output dragon3.png
 
