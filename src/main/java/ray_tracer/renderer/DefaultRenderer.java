@@ -8,6 +8,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ray_tracer.geometry.Orthonormal;
@@ -24,9 +26,21 @@ import ray_tracer.raytracer.Ray;
 public class DefaultRenderer implements Renderer {
 
     private final ExecutorService executor;
-
     public DefaultRenderer() {
-        this(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        this(createDaemonPool(Runtime.getRuntime().availableProcessors()));
+    }
+
+    private static ExecutorService createDaemonPool(int nThreads) {
+        ThreadFactory tf = new ThreadFactory() {
+            private final AtomicInteger cnt = new AtomicInteger(1);
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r, "rt-renderer-" + cnt.getAndIncrement());
+                t.setDaemon(true);
+                return t;
+            }
+        };
+        return Executors.newFixedThreadPool(nThreads, tf);
     }
 
     public DefaultRenderer(ExecutorService executor) {
