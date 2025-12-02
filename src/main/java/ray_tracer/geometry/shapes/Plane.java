@@ -15,7 +15,6 @@ public class Plane extends Shape {
     public Plane(Point point, Vector normal, Color diffuse, Color specular, int shininess) {
         super(diffuse, specular, shininess);
         this.point = point;
-        // Store normalized normal vector to ensure lighting calculations use unit normals.
         this.normal = normal.normalize();
     }
 
