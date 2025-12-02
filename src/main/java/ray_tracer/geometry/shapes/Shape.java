@@ -9,7 +9,7 @@ import ray_tracer.geometry.Vector;
 import java.util.Optional;
 
 public abstract class Shape {
-    protected static final double EPSILON = 1e-6;
+    protected static final double EPSILON = 1e-9;
 // la couleur principale de l'objet
     protected final Color diffuse;
 // effet miroir / brillance
