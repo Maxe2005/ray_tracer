@@ -4,7 +4,11 @@ import ray_tracer.imaging.Color;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
-
+/**
+Classe abstraite représentant une lumière.
+Elle définit uniquement une couleur, car toutes les lumières ont au minimum une couleur.
+Les classes qui héritent (PointLight, DirectionalLight) l'utiliseront.
+ */
 public abstract class AbstractLight {
     private Color color;
 

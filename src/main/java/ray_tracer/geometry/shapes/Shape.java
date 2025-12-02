@@ -10,7 +10,9 @@ import java.util.Optional;
 
 public abstract class Shape {
     protected static final double EPSILON = 1e-6;
+// la couleur principale de l'objet
     protected final Color diffuse;
+// effet miroir / brillance
     protected final Color specular;
     protected final int shininess;
 
@@ -47,7 +49,7 @@ public abstract class Shape {
     public int getShininess() {
         return shininess;
     }
-
+ // toString() convertit l'objet en texte lisible.
     public String toString() {
         return "Shape(diffuse: " + diffuse + ", specular: " + specular + ", shininess: " + shininess + ")";
     }

@@ -23,14 +23,20 @@ public class Scene {
     private List<Shape> shapes = new ArrayList<>();
 
     public boolean areLightsCorrect() {
+    // On crée donc trois compteurs (au départ à 0)
+    // pour additionner progressivement les couleurs.
         double totalRed = 0;
         double totalGreen = 0;
         double totalBlue = 0;
         for (AbstractLight light : lights) {
+            // Vérifie que la lumière appartient à un type autorisé
             if (!(light instanceof PointLight) && !(light instanceof DirectionalLight)) {
                 return false;
             }
+            // Récupération de la couleur de la lumière actuelle 
             Color color = light.getColor();
+         // Ajout des composantes de couleur dans les compteurs
+        // On additionne  les valeurs de R/G/B
             totalRed += color.getR();
             totalGreen += color.getG();
             totalBlue += color.getB();
@@ -166,6 +172,8 @@ public class Scene {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
+// StringBuilder permet de construire du texte progressivement sans créer une nouvelle chaîne à chaque concaténation
+//On l'utilise ici car la description d'une scène contient plusieurs lignes et plusieurs éléments (caméra, lumières, formes...),
         sb.append("Scene [width=").append(width).append(", height=").append(height).append("]\n");
         sb.append("\tcamera= ").append(camera).append("\n");
         sb.append("\toutput= ").append(output).append("\n");
