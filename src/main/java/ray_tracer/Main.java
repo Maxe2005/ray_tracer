@@ -16,9 +16,9 @@ public class Main {
         try {
             scene = SceneFileParser.parse(args[0]);
             System.out.println("\nScene parsed successfully: " + (scene != null));
-            if (scene != null) {
-                System.out.println("\n" + scene);
-            }
+            // if (scene != null) {
+            //     System.out.println("\n" + scene);
+            // }
         } catch (ParserException e) {
             System.err.println("Error parsing scene file: ");
             e.printError();

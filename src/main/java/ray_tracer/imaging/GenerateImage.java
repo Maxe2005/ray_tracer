@@ -34,6 +34,7 @@ public class GenerateImage {
                 if (intersection.isPresent()) {
                     image.setPixelColor(i, j, scene.getTotalRecursionColorAt(intersection.get()));
                 }
+                System.out.printf("Rendering progress: %.2f%%\r", 100.0 * (j * scene.getWidth() + i) / (scene.getWidth() * scene.getHeight() - 1));
             }
         }
         image.flipUpDown();
