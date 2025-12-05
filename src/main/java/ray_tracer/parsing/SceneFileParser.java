@@ -30,6 +30,17 @@ public class SceneFileParser {
     static int maxVerts = 0;
     static List<Point> vertexList = new ArrayList<>();
 
+    /**
+     * Parse a scene file and return a Scene object.
+     *
+     * If parsing fails (syntax error, missing required entries, or I/O problems),
+     * a {@link ParserException} is thrown so API callers can catch it and
+     * display or handle the error as they wish.
+     *
+     * Warnings collected during parsing are not printed to stderr; callers can
+     * retrieve them with {@link #getWarnings()} after calling this method
+     * (even if a ParserException was thrown).
+     */
     public static Scene parse(String sceneDescriptionPath) throws ParserException {
       // Convertion du chemin en objet Path lisible par Java
         Path path = Paths.get(sceneDescriptionPath);
@@ -49,12 +60,8 @@ public class SceneFileParser {
             handleFinalsErrors(scene);
             return scene;
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
-            for (String warning : warnings) {
-                System.err.println(warning);
-            }
+            // Propagate IO problems as ParserException so API callers can catch and display them
+            throw new ParserException("Erreur d'E/S lors de la lecture du fichier de scène: " + e.getMessage(), 0);
         }
     }
 
