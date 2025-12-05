@@ -268,6 +268,8 @@ public class Scene {
         s.unboundedShapes = new ArrayList<>(this.unboundedShapes);
         s.camera = (this.camera != null) ? this.camera.copy() : null;
         s.dirty = this.dirty;
+        // Propagate the configured recursion depth so renderers respect scene maxdepth
+        s.maxRecursionDepth = this.maxRecursionDepth;
         return s;
     }
 }
