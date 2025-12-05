@@ -72,15 +72,68 @@ Paramètres importants :
 
 - `maxLeafSize` : nombre max de primitives dans une feuille. Un compromis entre profondeur de l'arbre et coût par feuille. Dans notre implémentation nous utilisons `DEFAULT_MAX_LEAF = 4`.
 
-### Stratégie utilisée ici
+### Stratégie utilisée ici (SAH avec fallback médian)
 
-Dans `ray_tracer/geometry/accel/BVHNode.java` j'ai implémenté :
+Dans `ray_tracer/geometry/accel/BVHNode.java` j'ai implémenté une stratégie SAH (Surface Area Heuristic) simple basée sur du binning, avec un fallback vers un split médian lorsque la coupe SAH n'est pas profitable.
 
-- Construction récursive par split médian sur les centroïdes. L'axe choisi est celui de la plus grande étendue des centroïdes.
+- Construction récursive : on calcule la boîte englobante (AABB) du nœud courant.
 - Si le nombre de primitives <= `maxLeafSize`, on crée une feuille contenant la liste des `Shape`.
-- Sinon on trie et coupe en deux listes (gauche/droite) et construit récursivement.
+- Sinon on tente une partition basée sur SAH via binning :
 
-C'est simple, rapide à construire et adapté aux scènes statiques (pré-calcul). Pour des scènes très complexes ou pour des gains maxima, on peut remplacer par SAH.
+  - On choisit l'axe dont l'étendue des centroïdes est la plus grande.
+  - On répartit les primitives dans `NUM_SAH_BUCKETS` buckets selon la coordonnée du centroïde le long de cet axe.
+  - Pour chaque séparation possible entre buckets on calcule une estimation de coût SAH :
+
+    cost(split) = traversalCost + (area(left) _ count(left) + area(right) _ count(right)) / area(node)
+
+    Dans le code la constante `traversalCost` est simplifiée à `1.0` et le coût d'intersection par primitive est également normalisé à `1.0`, ce qui rend la formule implémentée :
+
+    cost = 1.0 + (leftArea _ leftCount + rightArea _ rightCount) / totalArea
+
+  - On choisit la séparation minimisant `cost(split)` ; si aucune séparation n'est bénéfique (ou si une bucket split produit une partition vide d'un côté), on retombe sur un split médian des centroïdes.
+
+Cette approche (SAH par binning) est un très bon compromis : elle capture l'essentiel des avantages de SAH (partitions de meilleure qualité, moins de chevauchements) tout en restant linéaire en pratique (O(N) pour remplir les buckets + coût logarithmique pour la récursion). Le code utilise `NUM_SAH_BUCKETS = 12` par défaut et `DEFAULT_MAX_LEAF = 4`.
+
+Pourquoi SAH est utile :
+
+- SAH favorise les partitions qui réduisent l'aire totale des boîtes enfants, donc diminue la probabilité qu'un rayon traverse les deux enfants. Moins de chevauchement → moins de tests de primitives.
+- Sur des distributions inégales (gros objets côtoyant petits objets ou clusters), SAH produit souvent des arbres bien meilleurs que le split médian.
+
+Coûts et compromis :
+
+- Construction légèrement plus coûteuse que le split médian (remplir buckets, calculer areas), mais la traversée moyenne est généralement plus rapide.
+- SAH peut être plus coûteux en mémoire temporaire (buckets) et un peu plus complexe à implémenter.
+
+Dans ce projet j'ai choisi SAH-binning avec fallback médian afin d'obtenir un bon gain en temps de parcours sans complexifier l'outil de construction.
+
+### Amélioration implémentée : exclusion des plans infinis
+
+Problème : les plans sont des primitives géométriques mathématiquement infinies. Pour les inclure dans un BVH il faut leur donner une boîte englobante finie (`AABB`) — typiquement on pourrait choisir une très grande boîte. Mais ces grandes boîtes couvrent souvent une large portion de la scène et chevauchent de nombreuses autres boîtes : cela annule l'effet du BVH (beaucoup de tests de boîtes et peu d'élagage).
+
+Solution choisie ici : exclure les `Plane` (ou plus généralement les primitives non-bornées) du BVH et les tester séparément.
+
+- Lors de l'ajout d'une forme (`Scene.addShape`) : si la forme est une instance de `Plane` on la conserve dans une liste `unboundedShapes` séparée ; sinon elle entre dans la collection normale de formes.
+- Lors de la construction du BVH (`Scene.buildAcceleration`) on filtre les formes bornées et on construit le BVH uniquement à partir de celles-ci.
+- Lors d'une intersection (`Scene.intersect`) on interroge d'abord le BVH pour obtenir l'intersection la plus proche sur les formes bornées, puis on teste toutes les `unboundedShapes` (plans) et on compare les distances pour retourner la plus proche intersection globale.
+
+Avantages :
+
+- Évite d'introduire des boîtes énormes qui chevauchent la scène, ce qui maintient un BVH efficace et des partitions utiles.
+- Tester explicitement quelques plans (s'il n'y en a pas beaucoup) est souvent beaucoup moins coûteux que dégrader tout le BVH.
+
+Coûts et compromis :
+
+- Chaque rayon doit tester explicitement la petite liste `unboundedShapes` en plus du BVH ; si tu as des milliers de plans, il faudra repenser la stratégie (par ex. regrouper les plans, culling par orientation, ou construire un BVH spécifique aux grandes surfaces).
+
+Référence dans le code :
+
+- `Scene.addShape(Shape shape)` : ajout conditionnel à `unboundedShapes`.
+- `Scene.buildAcceleration()` : construit la BVH en filtrant `Plane`.
+- `Scene.intersect(Ray ray)` : combine le résultat du BVH et les intersections sur `unboundedShapes`.
+
+Effet sur la rapidité de l'API :
+
+- En évitant que des primitives non-bornées ruinent la hiérarchie, la traversée du BVH reste efficace et les temps de rendu chutent de façon significative sur des scènes contenant peu de plans mais beaucoup d'autres primitives. C'est un excellent exemple de « prétraitement de la topologie » pour préserver la qualité d'une structure d'accélération.
 
 ## Parcours / Intersection
 

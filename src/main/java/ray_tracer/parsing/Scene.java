@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.shapes.Shape;
+import ray_tracer.geometry.shapes.Plane;
 import ray_tracer.geometry.accel.BVHNode;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.geometry.Vector;
@@ -22,6 +23,7 @@ public class Scene {
     private int maxRecursionDepth = DEFAULT_MAX_RECURSION_DEPTH;
     private List<AbstractLight> lights = new ArrayList<>();
     private List<Shape> shapes = new ArrayList<>();
+    private List<Shape> unboundedShapes = new ArrayList<>();
     // acceleration structure / dirty flag
     private boolean dirty = true;
     private BVHNode bvhRoot = null;
@@ -56,16 +58,21 @@ public class Scene {
         if (isDirty() || bvhRoot == null) {
             buildAcceleration();
         }
-
-        if (bvhRoot != null) {
-            Optional<Intersection> opt = bvhRoot.intersect(ray);
-            if (opt.isPresent()) return opt;
-        }
-
-        // Fallback (shouldn't happen often): brute force
         Intersection closest = null;
         double minDist = Double.POSITIVE_INFINITY;
-        for (Shape shape : shapes) {
+
+        // Query BVH for bounded shapes
+        if (bvhRoot != null) {
+            Optional<Intersection> opt = bvhRoot.intersect(ray);
+            if (opt.isPresent()) {
+                Intersection i = opt.get();
+                closest = i;
+                minDist = i.getDistance();
+            }
+        }
+
+        // Always test unbounded shapes (e.g., infinite planes) separately
+        for (Shape shape : unboundedShapes) {
             Optional<Intersection> opt = shape.intersect(ray);
             if (opt.isPresent()) {
                 Intersection inter = opt.get();
@@ -75,6 +82,21 @@ public class Scene {
                 }
             }
         }
+
+        // If no BVH was present (or it was empty), ensure we still test all shapes as fallback
+        if (bvhRoot == null) {
+            for (Shape shape : shapes) {
+                Optional<Intersection> opt = shape.intersect(ray);
+                if (opt.isPresent()) {
+                    Intersection inter = opt.get();
+                    if (inter.getDistance() < minDist) {
+                        minDist = inter.getDistance();
+                        closest = inter;
+                    }
+                }
+            }
+        }
+
         return (closest != null) ? Optional.of(closest) : Optional.empty();
     }
 
@@ -134,7 +156,11 @@ public class Scene {
 
     public void addShape(Shape shape) {
         this.shapes.add(shape);
-        this.dirty = true;
+        if (shape instanceof Plane) {
+            this.unboundedShapes.add(shape);
+        } else {
+            this.dirty = true;
+        }
     }
 
     public void addLight(AbstractLight light) {
@@ -207,7 +233,11 @@ public class Scene {
     public synchronized void buildAcceleration() {
         // Build a BVH from current shapes for faster intersection tests.
         try {
-            this.bvhRoot = BVHNode.build(this.shapes);
+            List<Shape> bounded = new ArrayList<>();
+            for (Shape s : this.shapes) {
+                if (!(s instanceof Plane)) bounded.add(s);
+            }
+            this.bvhRoot = BVHNode.build(bounded);
         } catch (Exception e) {
             // Ensure we don't break rendering: keep bvhRoot null on failure
             this.bvhRoot = null;
@@ -235,6 +265,7 @@ public class Scene {
         s.ambient = this.ambient;
         s.lights = new ArrayList<>(this.lights);
         s.shapes = new ArrayList<>(this.shapes);
+        s.unboundedShapes = new ArrayList<>(this.unboundedShapes);
         s.camera = (this.camera != null) ? this.camera.copy() : null;
         s.dirty = this.dirty;
         return s;
