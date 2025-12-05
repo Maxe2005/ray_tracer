@@ -11,7 +11,11 @@ public class ShapeTest {
 
     @Test
     public void null_diffuse_and_specular_become_black() {
-        Shape s = new Shape(null, null, 10) {};
+        Shape s = new Shape(null, null, 10) {@Override
+            public ray_tracer.geometry.AABB getBounds() {
+                // Return null for the test; implement properly in real shapes.
+                return null;
+            }};
         assertEquals(Color.BLACK.getR(), s.getDiffuse().getR(), 1e-12);
         assertEquals(Color.BLACK.getG(), s.getDiffuse().getG(), 1e-12);
         assertEquals(Color.BLACK.getB(), s.getDiffuse().getB(), 1e-12);
@@ -22,14 +26,22 @@ public class ShapeTest {
 
     @Test
     public void toString_contains_shape() {
-        Shape s = new Shape(Color.WHITE, Color.BLACK, 10) {};
+        Shape s = new Shape(Color.WHITE, Color.BLACK, 10) {@Override
+            public ray_tracer.geometry.AABB getBounds() {
+                // Return null for the test; implement properly in real shapes.
+                return null;
+            }};
         String t = s.toString();
         assertTrue(t.contains("Shape"));
     }
 
     @Test
     public void intersect_returns_empty_optional() {
-        Shape s = new Shape(Color.WHITE, Color.WHITE, 10) {};
+        Shape s = new Shape(Color.WHITE, Color.WHITE, 10) {@Override
+            public ray_tracer.geometry.AABB getBounds() {
+                // Return null for the test; implement properly in real shapes.
+                return null;
+            }};
         Optional<?> res = s.intersect(null);
         assertFalse(res.isPresent());
         assertEquals(Optional.empty(), res);
@@ -37,7 +49,11 @@ public class ShapeTest {
 
     @Test
     public void preserves_non_null_colors() {
-        Shape s = new Shape(Color.WHITE, Color.BLACK, 10) {};
+        Shape s = new Shape(Color.WHITE, Color.BLACK, 10) {@Override
+            public ray_tracer.geometry.AABB getBounds() {
+                // Return null for the test; implement properly in real shapes.
+                return null;
+            }};
         assertEquals(Color.WHITE.getR(), s.getDiffuse().getR(), 1e-12);
         assertEquals(Color.WHITE.getG(), s.getDiffuse().getG(), 1e-12);
         assertEquals(Color.WHITE.getB(), s.getDiffuse().getB(), 1e-12);

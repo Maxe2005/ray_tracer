@@ -24,6 +24,11 @@ public class IntersectionTest {
                 // Provide a default normal for tests that create anonymous shapes.
                 return new ray_tracer.geometry.Vector(0, 0, 1);
             }
+            @Override
+            public ray_tracer.geometry.AABB getBounds() {
+                // Return null for the test; implement properly in real shapes.
+                return null;
+            }
         };
         Intersection inter = new Intersection(r, 2.5, s);
         assertEquals(r, inter.getRay());

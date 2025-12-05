@@ -68,3 +68,4 @@ mvnw.cmd
 /*.png
 /tests_auto/
 .env
+*.test
