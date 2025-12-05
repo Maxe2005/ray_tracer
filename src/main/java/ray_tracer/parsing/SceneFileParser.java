@@ -27,6 +27,7 @@ public class SceneFileParser {
     static int waitingShininess = 0;
     static boolean isSizeSet = false;
     static boolean isCameraSet = false;
+    static boolean isAmbientSet = false;
     static int maxVerts = 0;
     static List<Point> vertexList = new ArrayList<>();
 
@@ -132,6 +133,7 @@ public class SceneFileParser {
         waitingShininess = 0;
         isSizeSet = false;
         isCameraSet = false;
+        isAmbientSet = false;
         maxVerts = 0;
         vertexList.clear();
     }
@@ -159,7 +161,7 @@ public class SceneFileParser {
         if (maxVerts > 0 && vertexList.size() < maxVerts) {
             addWarning("Le nombre de sommets définis est inférieur au maximum spécifié par maxverts.", 0, "Vous avez défini " + vertexList.size() + " sommets, mais le maxverts est de " + maxVerts + ".");
         }
-        if (scene.getAmbient().equals(Color.BLACK)) {
+        if (!isAmbientSet) {
             addWarning("Aucune couleur ambiante spécifiée dans le fichier de scène.", 0, "La couleur ambiante par défaut (noir) sera utilisée.");
         }
     }
@@ -251,10 +253,11 @@ public class SceneFileParser {
                 double r = Double.parseDouble(params[0]);
                 double g = Double.parseDouble(params[1]);
                 double b = Double.parseDouble(params[2]);
-                if (scene.getAmbient() != null) {
+                if (isAmbientSet) {
                     addWarning("La couleur ambiante a déjà été définie précédemment.", lineNumber, "Vous redéfinissez la couleur ambiante de la scène. La dernière valeur sera utilisée.");
                 }
                 scene.setAmbient(new Color(r, g, b));
+                isAmbientSet = true;
             } catch (NumberFormatException e) {
                 throw new ParserException("Couleur ambiante invalide: " + e.getMessage(), lineNumber);
             }
