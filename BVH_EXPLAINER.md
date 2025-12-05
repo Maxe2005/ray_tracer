@@ -1,6 +1,6 @@
 # BVH pour le ray tracer
 
-Ce document explique en détail ce qu'est un BVH (Bounding Volume Hierarchy), comment il fonctionne en général, et comment il est appliqué et intégré dans ce projet de ray tracer (`ray_tracer`). Le texte est en français et vise à couvrir les principes, l'implémentation, les choix faits ici, les réglages possibles, les problèmes connus et des pistes d'amélioration.
+Ce document explique en détail ce qu'est un BVH (Bounding Volume Hierarchy), comment il fonctionne en général, et comment il est appliqué et intégré dans ce projet de ray tracer (`ray_tracer`). Le texte vise à couvrir les principes, l'implémentation, les choix faits ici, les réglages possibles, les problèmes connus et des pistes d'amélioration.
 
 ---
 
@@ -229,72 +229,27 @@ if (abs(dir) < eps) {
 
 ## Points d'attention dans cette intégration
 
-1. Plans infinis :
-
-   - Les plans sont infinis et ne se « bornent » pas naturellement dans une AABB finie. Pour ne pas casser l'interface je fournis une AABB très grande centrée sur le point du plan (extent = 1e6). Cela permet d'inclure les plans dans le BVH, mais :
-     - Si vos scènes ont des coordonnées >> 1e6 cela peut être problématique.
-     - Ces grosses boîtes peuvent réduire l'efficacité du BVH (elles chevauchent beaucoup d'autres boîtes). Une autre stratégie consiste à exclure les plans du BVH et les tester séparément en brut-force (peu coûteux si peu de plans).
-
-2. Précision numérique :
+1. Précision numérique :
 
    - Tests du type `Math.abs(discriminant) < EPS` ou divisions par 0 dans `AABB.hit` demandent de choisir des epsilons raisonnables. Le slab method gère `dir` proche de zéro en testant l'origine par rapport aux bornes.
 
-3. Scènes dynamiques :
+2. Scènes dynamiques :
 
    - Le BVH ici est construit pour des scènes statiques. Si vous bougez fréquemment les objets à chaque image, il faudra :
      - soit reconstruire entièrement le BVH (coût élevé),
      - soit utiliser une structure dynamique (refit rapide des boîtes) ou BVH top-down réordonnable.
 
-4. Construction paresseuse :
+3. Construction paresseuse :
 
    - `Scene.intersect()` reconstruit la BVH si `dirty`. Avantage : pas de reconstruction inutile si on charge une scène puis on l'interroge.
 
-5. Partage d'objets/copyForRender :
+4. Partage d'objets/copyForRender :
    - `Scene.copyForRender()` retourne une copie superficielle des listes `shapes` et `lights`. Si vous construisez la BVH dans une `Scene` et que vous partagez les mêmes objets dans plusieurs threads, vous devez vous assurer que la construction/lecture est thread-safe. Dans le code, `buildAcceleration()` est `synchronized`.
 
 ## Concurrence et rendu
 
 - `Scene.buildAcceleration()` est `synchronized` pour éviter des reconstructions concurrentes.
 - Si vous lancez un rendu multi-thread (par pixel ou par bloc), il est préférable de construire le BVH une seule fois (par ex. avant le rendu) et rendre la scène immuable ensuite. Le BVH est en lecture seule pendant le rendu, donc les threads peuvent l'utiliser sans verrou supplémentaires.
-
-## Tests et benchmark
-
-Pour vérifier que tout compile et que les tests passent :
-
-```bash
-mvn test
-```
-
-Pour mesurer la différence de performance avant/après BVH sur un rendu complet :
-
-- Créer une scène lourde (beaucoup de triangles ou sphères).
-- Mesurer le temps d'exécution du rendu (par ex. lancement de la classe principale ou du test qui génère une image) avant d'ajouter le BVH, puis après.
-
-Un benchmark simple (script bash) peut :
-
-- exécuter `time java -cp target/classes ... RenderMain scene.scene output.png` plusieurs fois et prendre la moyenne.
-
-## Limitations et pièges
-
-- Split médian n'est pas optimal quand il y a des gros chevauchements ou primitives très inégalement distribuées.
-- L'utilisation d'une grosse AABB pour les plans diminue l'effet du BVH pour certaines scènes.
-- Si `getBounds()` d'une primitive est incorrect, la primitive peut être ignorée ou mal testée.
-- Le BVH augmente l'empreinte mémoire en ajoutant des nœuds et des boîtes.
-
-## Améliorations possibles
-
-- Remplacer le split médian par une construction SAH pour meilleurs temps de parcours.
-- Ne pas inclure les primitives « infinies » (plans) dans la BVH ; traiter séparément.
-- Ajout d'un ordre dynamique des enfants selon la proximité de l'intersection de leurs boîtes (tester d'abord la boîte la plus proche) pour accélérer l'élagage.
-- Implémentation itérative du parcours pour réduire l'overhead d'appel récursif.
-- Stockage en tableau plat (layout contiguous) pour améliorer la localisation mémoire et accélérer la traversée.
-- Support pour scènes dynamiques : refit, rebuilts incrémentaux, ou structures hybrides.
-
-## Pistes d'optimisation spécifiques au code
-
-- Exposer `maxLeafSize` comme paramètre (dans `BVHNode.build` ou `Scene`) pour ajuster la granularité.
-- Pour les plans : ajouter un champ `boolean includeInBVH` ou garder une liste `unboundedShapes` que l'on testera séparément.
-- Dans `BVHNode`, calculer l'ordre d'interrogation des enfants en mesurant le temps d'intersection des boîtes ou en estimant la distance minimale du rayon à la boîte.
 
 ## Références et lectures recommandées
 
@@ -311,13 +266,3 @@ Un benchmark simple (script bash) peut :
 - `src/main/java/ray_tracer/geometry/shapes/Shape.java` — nouveau `getBounds()`
 - `src/main/java/ray_tracer/geometry/shapes/Sphere.java`, `Triangle.java`, `Plane.java` — implémentations de `getBounds()`
 - `src/main/java/ray_tracer/parsing/Scene.java` — intégration du BVH (rebuild paresseux, utilisation dans `intersect`)
-
----
-
-Si tu veux, je peux :
-
-- ajouter un script de benchmark (`bench/render_bvh_vs_bruteforce.sh`) et exécuter quelques mesures sur une scène de test ;
-- remplacer la construction médiane par SAH (prise en charge plus longue mais meilleur résultat) ;
-- retirer les plans du BVH et les traiter séparément pour améliorer l'efficacité.
-
-Dis-moi quelle suite tu préfères et j'implémente/mesure cela pour toi.
