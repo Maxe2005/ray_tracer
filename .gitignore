@@ -65,6 +65,11 @@ mvnw
 mvnw.cmd
 /.mvn/
 
-/*.png
+# Ignore all PNG files
+*.png
+# But allow these two specific files (not ignored)
+!dragon3.png
+!final.png
+
 /tests_auto/
 .env
