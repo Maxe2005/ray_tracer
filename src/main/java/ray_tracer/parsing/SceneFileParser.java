@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-// Pour stocker des listes 
+// Pour stocker des listes
 import java.util.List;
 import java.util.ArrayList;
 
@@ -63,7 +63,7 @@ public class SceneFileParser {
         if (tokens.length == 0 || tokens[0].isEmpty() || tokens[0].equals("#")) {
             return; // Ignorer les lignes vides ou les commentaires
         }
-        // Le premier mot est le mot-clé 
+        // Le premier mot est le mot-clé
         String keyword = tokens[0].toLowerCase();
         // Le  reste : des paramètres
         String[] params = java.util.Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -120,8 +120,11 @@ public class SceneFileParser {
                 addWarning("Mot-clé '" + keyword + "' inconnu", lineNumber, null);
         }
     }
-  //   Remet à zéro toutes les variables internes du parser (appelée AU DÉBUT du parsing d’un fichier.scene)
-     
+
+    //   Remet à zéro toutes les variables internes du parser (appelée AU DÉBUT du parsing d’un fichier.scene)
+    /**
+     * Réinitialise l'état interne du parseur avant l'analyse d'un nouveau fichier.
+     */
     private static void initVariables() {
         warnings.clear();
         waitingDiffuse = null;
@@ -132,12 +135,11 @@ public class SceneFileParser {
         maxVerts = 0;
         vertexList.clear();
     }
- /*   Cette méthode est appelée APRÈS que toutes les lignes ont été lues.
-       Son rôle :
-         vérifier que les éléments obligatoires sont présents
-         lancer une erreur si c’est grave
-         ajouter des warnings pour les oublis mineurs  */
-    
+    /**   Cette méthode est appelée APRÈS que toutes les lignes ont été lues.
+        Son rôle :
+            vérifier que les éléments obligatoires sont présents
+            lancer une erreur si c’est grave
+            ajouter des warnings pour les oublis mineurs  */
     private static void handleFinalsErrors(Scene scene) throws ParserException {
         if (!isSizeSet) {
             throw new ParserException("Aucune taille spécifiée dans le fichier de scène.");
@@ -162,6 +164,12 @@ public class SceneFileParser {
         }
     }
 
+    /**
+     * Ajoute un warning interne collecté pendant le parsing.
+     * @param message message court du warning
+     * @param lineNumber numéro de ligne associé (0 si global)
+     * @param explanation explication détaillée facultative
+     */
     private static void addWarning(String message, int lineNumber, String explanation) {
         StringBuilder sb = new StringBuilder();
         sb.append("[SceneFileParser] WARNING");;

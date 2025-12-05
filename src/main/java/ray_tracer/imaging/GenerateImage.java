@@ -20,10 +20,19 @@ public class GenerateImage {
     private static RayTracer rayTracer;
     private static Image image;
 
+    /**
+     * Lance le rendu de la scène en affichant la progression par défaut.
+     * @param scene scène à rendre
+     */
     public static void render(Scene scene) {
         render(scene, true);
     }
 
+    /**
+     * Rend la scène et écrit le fichier de sortie PNG.
+     * @param scene scène à rendre
+     * @param showProgress affiche la progression si true
+     */
     public static void render(Scene scene, boolean showProgress){
         basis = Orthonormal.fromCamera(scene.getCamera());
         rayTracer = new RayTracer(scene);
@@ -47,6 +56,11 @@ public class GenerateImage {
         writeImage(image, scene.getOutputFile());
     }
 
+    /**
+     * Convertit l'objet interne {@code Image} en {@code BufferedImage} AWT.
+     * @param image image interne
+     * @return {@code BufferedImage}
+     */
     private static BufferedImage toBufferedImage(Image image) {
         BufferedImage buffer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < image.getHeight(); y++) {
@@ -58,6 +72,11 @@ public class GenerateImage {
         return buffer;
     }
 
+    /**
+     * Écrit l'image sur disque au chemin spécifié.
+     * @param image image à écrire
+     * @param name chemin/fichier de sortie
+     */
     private static void writeImage(Image image, String name) {
         Path outPath = Paths.get(name);
         try (OutputStream stream = Files.newOutputStream(outPath)) {

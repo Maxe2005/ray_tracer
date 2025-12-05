@@ -13,6 +13,11 @@ import ray_tracer.geometry.Intersection;
 public class DirectionalLight extends AbstractLight {
     private Vector direction;
 
+    /**
+     * Constructeur d'une lumière directionnelle.
+     * @param direction direction de la source
+     * @param color couleur/intensité
+     */
     public DirectionalLight(Vector direction, Color color) {
         super(color);
         // Store a normalized direction vector as provided by the scene (preserve orientation),
@@ -21,15 +26,27 @@ public class DirectionalLight extends AbstractLight {
     }
 
     @Override
+    /**
+     * Calcule la couleur reçue en un point d'intersection pour cette lumière.
+     * @param intersection intersection considérée
+     * @param eyeDirection vecteur vers l'oeil
+     * @return {@code Color} contribution lumineuse
+     */
     public Color getColorAt(Intersection intersection, Vector eyeDirection) {
         return calculDiffusionLambert(intersection).addition(calculSpeculairePhong(intersection, eyeDirection));
     }
 
+    /**
+     * Calcul diffusion Lambert pour lumière directionnelle.
+     */
     private Color calculDiffusionLambert(Intersection intersection) {
         double intensity = Math.max(intersection.getNormal().scalarProduct(direction), 0.0);
         return this.getColor().scalarMultiplication(intensity).schurProduct(intersection.getShape().getDiffuse());
     }
 
+    /**
+     * Calcul spéculaire Phong pour lumière directionnelle.
+     */
     private Color calculSpeculairePhong(Intersection intersection, Vector eyeDirection) {
         Vector reflectDir = direction.addition(eyeDirection).normalize();
         double specAngle = Math.max(reflectDir.scalarProduct(intersection.getNormal()), 0.0);
@@ -38,10 +55,16 @@ public class DirectionalLight extends AbstractLight {
     }
 
     @Override
+    /**
+     * Pour une lumière directionnelle, la direction est la même quel que soit le point.
+     * @param point point d'où la direction est demandée (ignoré)
+     * @return vecteur direction normalisé
+     */
     public Vector getDirectionFrom(Point point) {
         return direction;
     }
 
+    /** @return vecteur direction de la lumière */
     public Vector getDirection() {
         return direction;
     }

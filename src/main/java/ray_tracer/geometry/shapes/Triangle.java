@@ -19,6 +19,15 @@ public class Triangle extends Shape {
     private final Point b;
     private final Point c;
 
+    /**
+     * Constructeur triangle défini par trois sommets.
+     * @param v0 sommet 0
+     * @param v1 sommet 1
+     * @param v2 sommet 2
+     * @param diffuse couleur diffuse
+     * @param specular couleur spéculaire
+     * @param shininess brillance
+     */
     public Triangle(Point v0, Point v1, Point v2, Color diffuse, Color specular, int shininess) {
         super(diffuse, specular, shininess);
         this.a = v0;
@@ -27,10 +36,20 @@ public class Triangle extends Shape {
     }
 
     @Override
+    /**
+     * Intersection rayon-triangle (méthode principale, délègue à une variante).
+     * @param ray rayon testé
+     * @return {@code Optional<Intersection>} résultat
+     */
     public Optional<Intersection> intersect(Ray ray) {
         return intersect_v1(ray);
     }
     
+    /**
+     * Variante de l'algorithme d'intersection (Möller–Trumbore-like).
+     * @param ray rayon testé
+     * @return {@code Optional<Intersection>} résultat
+     */
     public Optional<Intersection> intersect_v1(Ray ray) {
         Vector edge1 = b.subtraction(a);
         Vector edge2 = c.subtraction(a);
@@ -57,6 +76,11 @@ public class Triangle extends Shape {
         return Optional.of(new Intersection(ray, t, this));
     }
 
+    /**
+     * Variante alternative d'intersection (plus robuste pour certains cas).
+     * @param ray rayon testé
+     * @return {@code Optional<Intersection>} résultat
+     */
     public Optional<Intersection> intersect_v2(Ray ray) {
 
         Vector rayDir = ray.getDirection();
@@ -131,19 +155,27 @@ public class Triangle extends Shape {
     }
 
 
+    /** @return sommet V0 */
     public Point getV0() {
         return a;
     }
 
+    /** @return sommet V1 */
     public Point getV1() {
         return b;
     }
 
+    /** @return sommet V2 */
     public Point getV2() {
         return c;
     }
 
     @Override
+    /**
+     * Calcule la normale du triangle (edge1 × edge2) et la normalise.
+     * @param point point sur le triangle (ignoré ici)
+     * @return normale unitaire
+     */
     public Vector getNormalAt(Point point) {
         Vector edge1 = b.subtraction(a);
         Vector edge2 = c.subtraction(a);

@@ -7,10 +7,18 @@ public class RayTracer {
     private double pixelWidth;
     private final Scene scene;
 
+    /**
+     * Initialise le ray tracer pour une scène donnée.
+     * @param scene scène à rendre
+     */
     public RayTracer(Scene scene) {
         this.scene = scene;
     }
 
+    /**
+     * Calcule les dimensions logiques d'un pixel en unité caméra (pixelWidth/pixelHeight)
+     * à partir de la caméra et de la taille de la scène.
+     */
     public void setPixelsDimensions() {
         double aspectRatio = (double) scene.getWidth() / (double) scene.getHeight();
         double fovRadians = scene.getCamera().getRadiansFov();
@@ -18,10 +26,12 @@ public class RayTracer {
         pixelWidth = pixelHeight * aspectRatio;
     }
 
+    /** @return hauteur d'un pixel en unité caméra */
     public double getPixelHeight() {
         return pixelHeight;
     }
 
+    /** @return largeur d'un pixel en unité caméra */
     public double getPixelWidth() {
         return pixelWidth;
     }

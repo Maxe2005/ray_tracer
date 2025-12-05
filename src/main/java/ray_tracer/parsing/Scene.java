@@ -22,6 +22,10 @@ public class Scene {
     private List<AbstractLight> lights = new ArrayList<>();
     private List<Shape> shapes = new ArrayList<>();
 
+    /**
+     * Vérifie la validité et la somme des composantes des lumières de la scène.
+     * @return true si toutes les lumières sont de types autorisés et leurs composantes RGB cumulées ≤ 1.0
+     */
     public boolean areLightsCorrect() {
     // On crée donc trois compteurs (au départ à 0)
     // pour additionner progressivement les couleurs.
@@ -44,6 +48,11 @@ public class Scene {
         return totalBlue <= 1.0 && totalGreen <= 1.0 && totalRed <= 1.0;
     }
 
+    /**
+     * Calcule la plus proche intersection entre un rayon et toutes les formes de la scène.
+     * @param ray rayon testé
+     * @return {@code Optional<Intersection>} de la plus proche intersection
+     */
     public Optional<Intersection> intersect(Ray ray) {
         if (!ray.isRayValid()) {
             return Optional.empty();
@@ -68,6 +77,12 @@ public class Scene {
         }
     }
 
+    /**
+     * Calcule la couleur totale en un point (ambiant + contributions directes des lumières sans ombres).
+     * @param intersection intersection considérée
+     * @param eyeDirection vecteur vers la caméra
+     * @return {@code Color} résultant
+     */
     public Color getTotalColorAt(Intersection intersection, Vector eyeDirection){
         Color totalLight = ambient;
         for (AbstractLight light : lights) {
@@ -81,6 +96,13 @@ public class Scene {
         return totalLight;
     }
 
+    /**
+     * Calcule la couleur en tenant compte des réflexions récursives jusqu'à une profondeur donnée.
+     * @param intersection intersection considérée
+     * @param eyeDirection vecteur vers la caméra
+     * @param recursionDepth profondeur de récursion restante
+     * @return {@code Color} résultat
+     */
     public Color getRecursionColorAt(Intersection intersection, Vector eyeDirection, int recursionDepth) {
         Color directColor = this.getTotalColorAt(intersection, eyeDirection);
         if (recursionDepth <= 1 || intersection.getShape().getSpecular().equals(Color.BLACK)) {
@@ -96,12 +118,23 @@ public class Scene {
         return directColor.addition(reflectedColor.schurProduct(intersection.getShape().getSpecular()));
     }
 
+    /**
+     * Helper : calcule la couleur complète en déterminant la direction vers l'oeil puis en appelant la récursion.
+     * @param intersection intersection considérée
+     * @return {@code Color} résultat
+     */
     public Color getTotalRecursionColorAt(Intersection intersection){
         // Compute the eye/view direction for this intersection: vector from the point to the camera
         Vector eyeDirection = intersection.getRay().getDirection().scalarMultiplication(-1).normalize();
         return getRecursionColorAt(intersection, eyeDirection, maxRecursionDepth);
     }
 
+    /**
+     * Définit la taille (width x height) de la scène.
+     * @param width largeur en pixels (>0)
+     * @param height hauteur en pixels (>0)
+     * @throws NumberFormatException si valeurs invalides
+     */
     public void addSize(int width, int height) throws NumberFormatException {
         if (width <= 0 || height <= 0){
             throw new NumberFormatException("Width and height must be positive integers.");
@@ -110,26 +143,38 @@ public class Scene {
         this.height = height;
     }
 
+    /**
+     * Définit le fichier de sortie pour l'image rendue.
+     * @param output chemin/fichier de sortie
+     */
     public void setOutputFile(String output) {
         this.output = output;
     }
 
+    /** @param camera définit la caméra de la scène */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
 
+    /** @param ambient couleur ambiante */
     public void setAmbient(Color ambient) {
         this.ambient = ambient;
     }
 
+    /** @param shape ajoute une forme à la scène */
     public void addShape(Shape shape) {
         this.shapes.add(shape);
     }
 
+    /** @param light ajoute une lumière à la scène */
     public void addLight(AbstractLight light) {
         this.lights.add(light);
     }
 
+    /**
+     * Définit la profondeur maximale de récursion pour réflexions.
+     * @param maxRecursionDepth profondeur (entier)
+     */
     public void addMaxRecursionDepth(int maxRecursionDepth) throws NumberFormatException {
         // if (maxRecursionDepth <= 0){
         //     throw new NumberFormatException("Max recursion depth must be a positive integer.");
@@ -138,38 +183,47 @@ public class Scene {
     }
 
 
+    /** @return largeur de la scène */
     public int getWidth() {
         return width;
     }
+    /** @return hauteur de la scène */
     public int getHeight() {
         return height;
     }
 
+    /** @return chemin/fichier de sortie */
     public String getOutputFile() {
         return output;
     }
 
+    /** @return caméra de la scène */
     public Camera getCamera() {
         return camera;
     }
 
+    /** @return couleur ambiante */
     public Color getAmbient() {
         return ambient;
     }
 
+    /** @return profondeur max de récursion */
     public int getMaxRecursionDepth() {
         return maxRecursionDepth;
     }
 
+    /** @return liste des formes de la scène */
     public List<Shape> getShapes() {
         return shapes;
     }
 
+    /** @return liste des lumières de la scène */
     public List<AbstractLight> getLights() {
         return lights;
     }
 
 
+    /** @return représentation textuelle multi-lignes de la scène */
     public String toString() {
         StringBuilder sb = new StringBuilder();
 // StringBuilder permet de construire du texte progressivement sans créer une nouvelle chaîne à chaque concaténation

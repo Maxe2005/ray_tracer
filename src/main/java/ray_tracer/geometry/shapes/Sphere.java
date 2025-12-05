@@ -12,6 +12,16 @@ public class Sphere extends Shape {
     private final Point center;
     private final double radius;
 
+    /**
+     * Constructeur d'une sphère centrée en (x,y,z).
+     * @param x centre X
+     * @param y centre Y
+     * @param z centre Z
+     * @param radius rayon
+     * @param diffuse couleur diffuse
+     * @param specular couleur spéculaire
+     * @param shininess brillance
+     */
     public Sphere(double x, double y, double z, double radius, Color diffuse, Color specular, int shininess) {
         super(diffuse, specular, shininess);
         this.center = new Point(x, y, z);
@@ -19,6 +29,11 @@ public class Sphere extends Shape {
     }
 
     @Override
+    /**
+     * Calcule l'intersection entre un rayon et la sphère (solutions du polynôme quadratique).
+     * @param ray rayon testé
+     * @return {@code Optional<Intersection>} si intersection valide la plus proche
+     */
     public Optional<Intersection> intersect(Ray ray) {
         // On résout l'équation du second degré pour trouver les intersections
         // a*t² + b*t + c = 0 avec :
@@ -57,22 +72,31 @@ public class Sphere extends Shape {
     }
 
     @Override
+    /**
+     * Normal à la sphère en un point donné.
+     * @param point point sur la surface
+     * @return vecteur normal unitaire
+     */
     public Vector getNormalAt(Point point) {
         return point.subtraction(center).normalize();
     }
 
+    /** @return centre X */
     public double getX() {
         return center.getX();
     }
 
+    /** @return centre Y */
     public double getY() {
         return center.getY();
     }
 
+    /** @return centre Z */
     public double getZ() {
         return center.getZ();
     }
 
+    /** @return rayon de la sphère */
     public double getRadius() {
         return radius;
     }

@@ -7,12 +7,19 @@ import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
-//Un plan est défini par un point appartenant au plan et un vecteur normal (perpendiculaire au plan)
- 
+
 public class Plane extends Shape {
     private final Point point;
     private final Vector normal;
 
+    /**
+     * Constructeur d'un plan défini par un point et une normale (perpendiculaire au plan).
+     * @param point point appartenant au plan
+     * @param normal vecteur normal (sera normalisé)
+     * @param diffuse couleur diffuse
+     * @param specular couleur spéculaire
+     * @param shininess brillance
+     */
     public Plane(Point point, Vector normal, Color diffuse, Color specular, int shininess) {
         super(diffuse, specular, shininess);
         this.point = point;
@@ -21,6 +28,11 @@ public class Plane extends Shape {
     }
 
     @Override
+    /**
+     * Calcule l'intersection entre un rayon et le plan (si elle existe).
+     * @param ray rayon testé
+     * @return {@code Optional<Intersection>} contenant l'intersection la plus proche si existante
+     */
     public Optional<Intersection> intersect(Ray ray) {
         double denom = normal.scalarProduct(ray.getDirection());
         if (Math.abs(denom) > EPSILON) {
@@ -33,15 +45,22 @@ public class Plane extends Shape {
         return Optional.empty();
     }
 
+    /** @return point appartenant au plan */
     public Point getPoint() {
         return point;
     }
 
+    /** @return normale (unit) du plan */
     public Vector getNormal() {
         return normal;
     }
 
     @Override
+    /**
+     * Normal au plan (constante quel que soit le point).
+     * @param point point sur le plan (ignoré)
+     * @return vecteur normal unitaire
+     */
     public Vector getNormalAt(Point point) {
         return normal;
     }

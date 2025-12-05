@@ -7,6 +7,11 @@ import ray_tracer.imaging.GenerateImage;
 
 public class Main {
     private static Scene scene;
+    /**
+     * Point d'entrée de l'application. Charge une scène depuis fichier et lance le rendu.
+     * Usage: java -jar ray_tracer.jar <scene_file> [--progress|--no-progress]
+     * @param args arguments de la ligne de commande
+     */
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Usage: java -jar ray_tracer.jar <scene_file> [--progress|--no-progress]");
