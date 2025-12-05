@@ -140,9 +140,9 @@ foreach ($f in $files){ Write-Host "  - $($f.FullName)" -ForegroundColor Yellow 
 foreach ($f in $files){
     Write-Host ('=' * 70) -ForegroundColor Cyan
     Write-Host "Fichier : $($f.FullName)" -ForegroundColor Cyan
-    Write-Host "Commande: java -cp '$JarPath' $($Script:MAIN_CLASS) '$($f.FullName)'" -ForegroundColor Cyan
+    Write-Host "Commande: java -cp '$JarPath' $($Script:MAIN_CLASS) '$($f.FullName)' --no-progress" -ForegroundColor Cyan
 
-    & java -cp $JarPath $Script:MAIN_CLASS $f.FullName
+    & java -cp $JarPath $Script:MAIN_CLASS $f.FullName --no-progress
     $rc = $LASTEXITCODE
     if ($rc -eq 0){ Write-Ok "Exit code: $rc" } else { Write-Err "Exit code: $rc" }
 

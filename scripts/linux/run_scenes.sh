@@ -15,7 +15,6 @@ set -euo pipefail
 # - MAIN_CLASS peut être redéfini dans .env (par défaut ray_tracer.Main)
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../" && pwd)"
-echo "ROOT_DIR = $ROOT_DIR"
 ENV_FILE="$ROOT_DIR/.env"
 JALON_ENV_FILE="$ROOT_DIR/jalon.env"
 
@@ -145,7 +144,7 @@ echo
 for f in "${files[@]}"; do
   echo -e "${CYAN}================================================================${NC}"
   echo -e "${CYAN}Fichier : ${WHITE:-}$f${NC}"
-  cmd "Commande: java -cp '$JAR_PATH' $MAIN_CLASS '$f'"
+  cmd "Commande: java -cp '$JAR_PATH' $MAIN_CLASS '$f' --no-progress"
   echo -e "${CYAN}----------------------------------------------------------------${NC}"
 
   # Exécuter et afficher la sortie en direct. On capture le code retour.
