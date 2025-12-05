@@ -34,6 +34,10 @@ public abstract class Shape {
         return Optional.empty();
     }
 
+    /**
+     * Axis-aligned bounding box for this shape (used by acceleration structures).
+     */
+    public abstract ray_tracer.geometry.AABB getBounds();
     public Vector getNormalAt(Point point) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("getNormalAt method not implemented for this shape type.");
     }

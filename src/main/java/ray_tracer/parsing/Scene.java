@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.shapes.Shape;
+import ray_tracer.geometry.accel.BVHNode;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.geometry.Vector;
 import ray_tracer.raytracer.Ray;
@@ -23,6 +24,7 @@ public class Scene {
     private List<Shape> shapes = new ArrayList<>();
     // acceleration structure / dirty flag
     private boolean dirty = true;
+    private BVHNode bvhRoot = null;
 
     public boolean areLightsCorrect() {
     // On crée donc trois compteurs (au départ à 0)
@@ -50,24 +52,30 @@ public class Scene {
         if (!ray.isRayValid()) {
             return Optional.empty();
         }
-        List<Optional<Intersection>> intersections = new ArrayList<>();
-        for (Shape shape : shapes) {
-            Optional<Intersection> intersection = shape.intersect(ray);
-            if (intersection.isPresent()) {
-                intersections.add(intersection);
-            }
+        // If acceleration structure is dirty, rebuild it lazily
+        if (isDirty() || bvhRoot == null) {
+            buildAcceleration();
         }
-        if (!intersections.isEmpty()) {
-            Optional<Intersection> closestIntersection = intersections.get(0);
-            for (Optional<Intersection> intersection : intersections) {
-                if (intersection.get().getDistance() < closestIntersection.get().getDistance()) {
-                    closestIntersection = intersection;
+
+        if (bvhRoot != null) {
+            Optional<Intersection> opt = bvhRoot.intersect(ray);
+            if (opt.isPresent()) return opt;
+        }
+
+        // Fallback (shouldn't happen often): brute force
+        Intersection closest = null;
+        double minDist = Double.POSITIVE_INFINITY;
+        for (Shape shape : shapes) {
+            Optional<Intersection> opt = shape.intersect(ray);
+            if (opt.isPresent()) {
+                Intersection inter = opt.get();
+                if (inter.getDistance() < minDist) {
+                    minDist = inter.getDistance();
+                    closest = inter;
                 }
             }
-            return closestIntersection;
-        } else {
-            return Optional.empty();
         }
+        return (closest != null) ? Optional.of(closest) : Optional.empty();
     }
 
     public Color getTotalColorAt(Intersection intersection, Vector eyeDirection){
@@ -126,6 +134,7 @@ public class Scene {
 
     public void addShape(Shape shape) {
         this.shapes.add(shape);
+        this.dirty = true;
     }
 
     public void addLight(AbstractLight light) {
@@ -196,7 +205,13 @@ public class Scene {
      * This is a no-op placeholder for now; implementations may build a real BVH.
      */
     public synchronized void buildAcceleration() {
-        // Placeholder: mark as clean after "building" acceleration
+        // Build a BVH from current shapes for faster intersection tests.
+        try {
+            this.bvhRoot = BVHNode.build(this.shapes);
+        } catch (Exception e) {
+            // Ensure we don't break rendering: keep bvhRoot null on failure
+            this.bvhRoot = null;
+        }
         this.dirty = false;
     }
 

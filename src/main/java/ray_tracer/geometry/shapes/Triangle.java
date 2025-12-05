@@ -7,6 +7,7 @@ import ray_tracer.geometry.Point;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
 import ray_tracer.geometry.Vector;
+import ray_tracer.geometry.AABB;
 /**
   Dans un ray tracer, les triangles sont très importants car :
   - toutes les formes complexes peuvent être découpées en triangles
@@ -148,6 +149,17 @@ public class Triangle extends Shape {
         Vector edge1 = b.subtraction(a);
         Vector edge2 = c.subtraction(a);
         return edge1.vectorialProduct(edge2).normalize();
+    }
+
+    @Override
+    public AABB getBounds() {
+        double minX = Math.min(a.getX(), Math.min(b.getX(), c.getX()));
+        double minY = Math.min(a.getY(), Math.min(b.getY(), c.getY()));
+        double minZ = Math.min(a.getZ(), Math.min(b.getZ(), c.getZ()));
+        double maxX = Math.max(a.getX(), Math.max(b.getX(), c.getX()));
+        double maxY = Math.max(a.getY(), Math.max(b.getY(), c.getY()));
+        double maxZ = Math.max(a.getZ(), Math.max(b.getZ(), c.getZ()));
+        return new AABB(new Point(minX, minY, minZ), new Point(maxX, maxY, maxZ));
     }
 
     @Override

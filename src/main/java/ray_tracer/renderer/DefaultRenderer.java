@@ -124,12 +124,15 @@ public class DefaultRenderer implements Renderer {
             });
         }
 
-        // Use a small thread pool for tiles
-        ExecutorService pool = Executors.newFixedThreadPool(Math.max(1, opts.threadCount));
+        // Use the renderer's executor for tile tasks to avoid creating a new pool each render.
+        ExecutorService pool = this.executor;
         try {
             List<Future<?>> futures = new ArrayList<>();
             final int totalTiles = tiles.size();
             final int[] doneCount = {0};
+
+            // Thread-local reusable Ray to avoid allocating a Ray per pixel
+            final ThreadLocal<Ray> rayLocal = ThreadLocal.withInitial(() -> new Ray(camera.getLookFrom()));
 
             for (int[] t : tiles) {
                 if (cancelled.get()) break;
@@ -142,31 +145,31 @@ public class DefaultRenderer implements Renderer {
                             if (cancelled.get()) break;
                             int px = tx + xx;
                             // compute ray for pixel (px,py)
-                            Ray ray = new Ray(camera.getLookFrom());
+                            Ray ray = rayLocal.get();
+                            // update origin in case camera moved
+                            ray.setOrigin(camera.getLookFrom());
                             ray.setDirection(basis, px, py, rt.getPixelWidth(), rt.getPixelHeight(), width, height);
                             java.util.Optional<Intersection> intersection = scene.intersect(ray);
                             if (intersection.isPresent()) {
                                 Color c = scene.getTotalRecursionColorAt(intersection.get());
-                                synchronized (img) {
-                                    img.setRGB(px, py, c.toRGB());
-                                }
+                                // No need to synchronize per-pixel: tiles are disjoint
+                                img.setRGB(px, py, c.toRGB());
                             }
                         }
                     }
                     int done;
                     synchronized (doneCount) { doneCount[0]++; done = doneCount[0]; }
                     double progress = (double)done / (double)totalTiles;
-                    // emit update for this tile
-                    BufferedImage part;
+                    // emit update for this tile (snapshot under lock)
+                    BufferedImage copy;
                     synchronized (img) {
-                        part = img.getSubimage(tx, ty, tw, th);
-                        // create copy to detach from backing image
-                        BufferedImage copy = new BufferedImage(part.getWidth(), part.getHeight(), BufferedImage.TYPE_INT_RGB);
+                        BufferedImage part = img.getSubimage(tx, ty, tw, th);
+                        copy = new BufferedImage(part.getWidth(), part.getHeight(), BufferedImage.TYPE_INT_RGB);
                         copy.getGraphics().drawImage(part, 0, 0, null);
-                        RenderUpdate ru = new RenderUpdate(copy, tx, ty, tw, th, progress);
-                        for (ProgressListener l : listeners) {
-                            try { l.onUpdate(ru); } catch (Exception ex) { /* listeners should handle errors */ }
-                        }
+                    }
+                    RenderUpdate ru = new RenderUpdate(copy, tx, ty, tw, th, progress);
+                    for (ProgressListener l : listeners) {
+                        try { l.onUpdate(ru); } catch (Exception ex) { /* listeners should handle errors */ }
                     }
                 };
                 futures.add(pool.submit(task));
@@ -180,7 +183,7 @@ public class DefaultRenderer implements Renderer {
             if (cancelled.get()) throw new RenderException("Cancelled");
             return img;
         } finally {
-            pool.shutdownNow();
+            // do not shutdown shared executor
         }
     }
 

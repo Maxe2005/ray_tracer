@@ -2,6 +2,7 @@ package ray_tracer.geometry.shapes;
 
 import ray_tracer.imaging.Color;
 import ray_tracer.geometry.Point;
+import ray_tracer.geometry.AABB;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.raytracer.Ray;
 import ray_tracer.geometry.Vector;
@@ -83,4 +84,13 @@ public class Sphere extends Shape {
                 + ", diffuse: " + diffuse + ", specular: " + specular + ")";
     }
 
+
+    @Override
+    public AABB getBounds() {
+        Point min = new Point(center.getX() - radius, center.getY() - radius, center.getZ() - radius);
+        Point max = new Point(center.getX() + radius, center.getY() + radius, center.getZ() + radius);
+        return new AABB(min, max);
+    }
+
 }
+

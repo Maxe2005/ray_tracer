@@ -7,6 +7,7 @@ import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
 import ray_tracer.imaging.Color;
 import ray_tracer.raytracer.Ray;
+import ray_tracer.geometry.AABB;
 //Un plan est défini par un point appartenant au plan et un vecteur normal (perpendiculaire au plan)
  
 public class Plane extends Shape {
@@ -43,6 +44,15 @@ public class Plane extends Shape {
     @Override
     public Vector getNormalAt(Point point) {
         return normal;
+    }
+
+    @Override
+    public AABB getBounds() {
+        // Plane is infinite; approximate with a very large box centered on the plane point.
+        double extent = 1e6; // large enough for typical scenes
+        Point min = new Point(point.getX() - extent, point.getY() - extent, point.getZ() - extent);
+        Point max = new Point(point.getX() + extent, point.getY() + extent, point.getZ() + extent);
+        return new AABB(min, max);
     }
 
     @Override

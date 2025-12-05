@@ -5,7 +5,7 @@ import ray_tracer.geometry.Point;
 import ray_tracer.geometry.Vector;
 
 public class Ray {
-    private final Point origin;
+    private Point origin;
     private Vector direction;
 
     public Ray(Point origin, Vector direction) {
@@ -16,6 +16,10 @@ public class Ray {
     public Ray(Point origin) {
         this.origin = origin;
         this.direction = new Vector(0, 0, 0);
+    }
+
+    public void setOrigin(Point origin) {
+        this.origin = origin;
     }
 
     public void setDirection(Orthonormal basis, int i, int j, double pixelWidth, double pixelHeight, int imageWidth, int imageHeight) {
