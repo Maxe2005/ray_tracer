@@ -150,7 +150,7 @@ for f in "${files[@]}"; do
 
   # Exécuter et afficher la sortie en direct. On capture le code retour.
   set +e
-  java -cp "$JAR_PATH" "$MAIN_CLASS" "$f"
+  java -cp "$JAR_PATH" "$MAIN_CLASS" "$f" --no-progress
   rc=$?
   set -e
   echo -e "${CYAN}----------------------------------------------------------------${NC}"

@@ -20,7 +20,11 @@ public class GenerateImage {
     private static RayTracer rayTracer;
     private static Image image;
 
-    public static void render (Scene scene){
+    public static void render(Scene scene) {
+        render(scene, true);
+    }
+
+    public static void render(Scene scene, boolean showProgress){
         basis = Orthonormal.fromCamera(scene.getCamera());
         rayTracer = new RayTracer(scene);
         rayTracer.setPixelsDimensions();
@@ -34,7 +38,9 @@ public class GenerateImage {
                 if (intersection.isPresent()) {
                     image.setPixelColor(i, j, scene.getTotalRecursionColorAt(intersection.get()));
                 }
-                System.out.printf("Rendering progress: %.2f%%\r", 100.0 * (j * scene.getWidth() + i) / (scene.getWidth() * scene.getHeight() - 1));
+                if (showProgress) {
+                    System.out.printf("Rendering progress: %.2f%%\r", 100.0 * (j * scene.getWidth() + i) / (scene.getWidth() * scene.getHeight() - 1));
+                }
             }
         }
         image.flipUpDown();
