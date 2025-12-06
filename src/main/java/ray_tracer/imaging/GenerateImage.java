@@ -52,11 +52,13 @@ public class GenerateImage {
                 }
             }
         }
+        // Correction : Java inverse verticalement les coordonnées, donc on retourne l'image
         image.flipUpDown();
+        
         writeImage(image, scene.getOutputFile());
     }
-
     /**
+     * Conversion d'une image interne en BufferedImage utilisable par ImageIO
      * Convertit l'objet interne {@code Image} en {@code BufferedImage} AWT.
      * @param image image interne
      * @return {@code BufferedImage}
@@ -73,6 +75,7 @@ public class GenerateImage {
     }
 
     /**
+     * Sauvegarde du BufferedImage dans un fichier PNG
      * Écrit l'image sur disque au chemin spécifié.
      * @param image image à écrire
      * @param name chemin/fichier de sortie

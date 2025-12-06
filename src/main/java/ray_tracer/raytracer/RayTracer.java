@@ -14,7 +14,6 @@ public class RayTracer {
     public RayTracer(Scene scene) {
         this.scene = scene;
     }
-
     /**
      * Calcule les dimensions logiques d'un pixel en unité caméra (pixelWidth/pixelHeight)
      * à partir de la caméra et de la taille de la scène.
