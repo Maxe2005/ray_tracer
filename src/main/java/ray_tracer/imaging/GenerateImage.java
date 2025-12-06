@@ -36,10 +36,12 @@ public class GenerateImage {
                 }
             }
         }
+        // Correction : Java inverse verticalement les coordonnées, donc on retourne l'image
         image.flipUpDown();
+        
         writeImage(image, scene.getOutputFile());
     }
-
+    // Conversion d'une image interne en BufferedImage utilisable par ImageIO
     private static BufferedImage toBufferedImage(Image image) {
         BufferedImage buffer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < image.getHeight(); y++) {
@@ -50,6 +52,8 @@ public class GenerateImage {
         }
         return buffer;
     }
+    
+ // Sauvegarde du BufferedImage dans un fichier PNG
 
     private static void writeImage(Image image, String name) {
         Path outPath = Paths.get(name);
