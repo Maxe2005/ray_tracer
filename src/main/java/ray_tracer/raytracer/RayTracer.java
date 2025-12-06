@@ -12,7 +12,7 @@ public class RayTracer {
     public RayTracer(Scene scene) {
         this.scene = scene;
     }
-
+  // Calcule les dimensions d'un pixel dans la scène à partir du FOV
     public void setPixelsDimensions() {
         double aspectRatio = (double) scene.getWidth() / (double) scene.getHeight();
         double fovRadians = scene.getCamera().getRadiansFov();
