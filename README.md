@@ -30,6 +30,10 @@ Utilisation rapide
 
   `./scripts/linux/run_final.sh ./src/main/resources/scenes/jalon2/test6.scene`
 
+- Lancer toutes les scenes de tests avec comparaison :
+  
+  `./scripts/linux/run_scenes.sh`
+
 Notes
 
 - Les warnings collectés pendant le parsing sont affichés sur la sortie d'erreur (stderr) à la fin du parsing.
