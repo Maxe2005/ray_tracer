@@ -39,3 +39,13 @@ Utilisation rapide
   Exemple :
 
   `./scripts/linux/run_final.sh ./src/main/resources/scenes/jalon4/tp41-dir.test`
+
+- Lancer toutes les scenes de tests avec comparaison :
+  
+  `./scripts/linux/run_scenes.sh`
+
+  Conseils d'utilisation de ce script:
+
+  - copier le fichier `exemple.env`,
+  - le renomer `.env` et renseigner le path du .jar du comparateur d'image pour que le script puisse effectuer les comparaisons.
+  - vous trouverez un comparateur d'image sur mon github : `https://github.com/Maxe2005/imgcompare`
