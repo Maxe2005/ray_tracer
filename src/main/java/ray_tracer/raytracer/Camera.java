@@ -1,4 +1,4 @@
-package ray_tracer.parsing;
+package ray_tracer.raytracer;
 /**
  Représente la caméra de la scène.
  Elle contient :

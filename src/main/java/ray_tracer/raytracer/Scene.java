@@ -1,16 +1,18 @@
-package ray_tracer.parsing;
+package ray_tracer.raytracer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import ray_tracer.imaging.Color;
+import ray_tracer.light.AbstractLight;
+import ray_tracer.light.DirectionalLight;
+import ray_tracer.light.PointLight;
 import ray_tracer.geometry.shapes.Shape;
 import ray_tracer.geometry.shapes.Plane;
 import ray_tracer.geometry.accel.BVHNode;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.geometry.Vector;
-import ray_tracer.raytracer.Ray;
 
 public class Scene {
     public static final String DEFAULT_OUTPUT = "output.png";

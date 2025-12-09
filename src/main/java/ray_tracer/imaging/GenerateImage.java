@@ -1,12 +1,13 @@
 package ray_tracer.imaging;
 
-import ray_tracer.parsing.Scene;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import ray_tracer.raytracer.Scene;
 import ray_tracer.renderer.DefaultRenderer;
 import ray_tracer.renderer.ImageUtils;
 import ray_tracer.renderer.RenderException;

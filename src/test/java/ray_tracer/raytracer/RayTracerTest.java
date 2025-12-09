@@ -1,8 +1,6 @@
 package ray_tracer.raytracer;
 
 import org.junit.jupiter.api.Test;
-import ray_tracer.parsing.Scene;
-import ray_tracer.parsing.Camera;
 
 import static org.junit.jupiter.api.Assertions.*;
 

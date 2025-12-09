@@ -1,7 +1,8 @@
 package ray_tracer.renderer;
 
-import ray_tracer.parsing.Scene;
-import ray_tracer.parsing.Camera;
+import ray_tracer.raytracer.Camera;
+import ray_tracer.raytracer.Scene;
+
 import java.awt.image.BufferedImage;
 
 /**

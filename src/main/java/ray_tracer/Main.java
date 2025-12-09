@@ -1,7 +1,7 @@
 package ray_tracer;
 
-import ray_tracer.parsing.Scene;
 import ray_tracer.parsing.SceneFileParser;
+import ray_tracer.raytracer.Scene;
 import ray_tracer.parsing.ParserException;
 import ray_tracer.imaging.GenerateImage;
 
@@ -45,16 +45,13 @@ public class Main {
         try {
             scene = SceneFileParser.parse(args[0]);
             System.out.println("\nScene parsed successfully: " + (scene != null));
-            // if (scene != null) {
-            //     System.out.println("\n" + scene);
-            // }
         } catch (ParserException e) {
             System.err.println("Error parsing scene file: ");
             e.printError();
+            return;
         }
 
         // Delegate rendering; if threadCount <= 0 uses renderer defaults
         GenerateImage.render(scene, threadCount);
-        // GenerateImage.renderSync(scene);
     }
 }

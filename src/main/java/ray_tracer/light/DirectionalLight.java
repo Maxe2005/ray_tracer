@@ -1,4 +1,4 @@
-package ray_tracer.parsing;
+package ray_tracer.light;
 
 import ray_tracer.geometry.Vector;
 import ray_tracer.geometry.Point;

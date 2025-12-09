@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ray_tracer.geometry.Orthonormal;
 import ray_tracer.geometry.Intersection;
 import ray_tracer.imaging.Color;
-import ray_tracer.parsing.Camera;
-import ray_tracer.parsing.Scene;
 import ray_tracer.raytracer.RayTracer;
+import ray_tracer.raytracer.Scene;
+import ray_tracer.raytracer.Camera;
 import ray_tracer.raytracer.Ray;
 
 /**

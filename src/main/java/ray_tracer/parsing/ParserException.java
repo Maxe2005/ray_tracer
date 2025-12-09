@@ -21,12 +21,17 @@ public class ParserException extends Exception {
         super(message);
     }
 
-    public void printError() {
+    @Override
+    public String getMessage() {
         if (lineNumber == 0) {
-            System.err.println("[SceneFileParser] GLOBAL ERROR: " + getMessage());
+            return "[SceneFileParser] GLOBAL ERROR: " + super.getMessage();
         } else {
-            System.err.println("[SceneFileParser] ERROR at line " + lineNumber + ": " + getMessage());
+            return "[SceneFileParser] ERROR at line " + lineNumber + ": " + super.getMessage();
         }
+    }
+
+    public void printError() {
+        System.err.println(this.getMessage());
     }
 
 }

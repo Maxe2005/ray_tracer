@@ -8,10 +8,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ray_tracer.imaging.Color;
+import ray_tracer.light.DirectionalLight;
 import ray_tracer.geometry.shapes.Sphere;
-import ray_tracer.parsing.Scene;
-import ray_tracer.parsing.DirectionalLight;
-import ray_tracer.parsing.Camera;
+import ray_tracer.raytracer.Camera;
+import ray_tracer.raytracer.Scene;
 import ray_tracer.geometry.Vector;
 
 public class RendererTest {

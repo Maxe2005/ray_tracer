@@ -1,7 +1,5 @@
 package ray_tracer.raytracer;
 
-import ray_tracer.parsing.Scene;
-
 public class RayTracer {
     private double pixelHeight;
     private double pixelWidth;

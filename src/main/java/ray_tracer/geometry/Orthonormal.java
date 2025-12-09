@@ -1,6 +1,6 @@
 package ray_tracer.geometry;
 
-import ray_tracer.parsing.Camera;
+import ray_tracer.raytracer.Camera;
 
 public class Orthonormal {
     private Vector u;
