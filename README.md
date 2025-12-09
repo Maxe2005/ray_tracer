@@ -35,6 +35,16 @@ Utilisation rapide
 
   `./scripts/linux/run_final.sh ./src/main/resources/scenes/jalon3/example.scene`
 
+- Lancer toutes les scenes de tests avec comparaison :
+  
+  `./scripts/linux/run_scenes.sh`
+
+  Conseils d'utilisation de ce script:
+
+  - copier le fichier `exemple.env`,
+  - le renomer `.env` et renseigner le path du .jar du comparateur d'image pour que le script puisse effectuer les comparaisons.
+  - vous trouverez un comparateur d'image sur mon github : `https://github.com/Maxe2005/imgcompare`
+
 Notes
 
 - Les tests valident principalement la détection d'intersections (miss vs hit) et la correspondance pixel <-> premier objet touché.
